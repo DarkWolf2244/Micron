@@ -3,13 +3,13 @@
 	import IconPlay from '~icons/tabler/player-play-filled';
 	import IconHelpCircle from '~icons/tabler/help-circle-filled';
 	import IconBullet from '~icons/tabler/diamonds-filled';
-	import Overlay from '$lib/components/ui/game/Overlay.svelte';
 	import { gameDataStore, initializeNewSave } from '$lib/data/game.svelte';
 	import { overlayStore } from '$lib/data/overlay.svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import gsap from 'gsap';
-	import { fade } from 'svelte/transition';
+	import { Spinner } from '$lib/components/ui/spinner';
+
 	onMount(() => {
 		if (gameDataStore.data) {
 			goto('/play');
@@ -21,13 +21,8 @@
 
 <svelte:head><title>Micron</title></svelte:head>
 
-{#if gameDataStore.loadingGameData}
-	<div
-		class="flex min-h-screen w-full flex-auto flex-col items-center-safe justify-center gap-y-8 bg-background p-4"
-	>
-		<h1 class="h1 slow-animate-in text-primary">Loading...</h1>
-	</div>
-{:else if gameDataStore.data === null}
+
+{#if gameDataStore.data === null}
 	<div
 		class="flex min-h-screen w-full flex-auto flex-col items-center-safe justify-center gap-y-8 bg-background p-4"
 	>

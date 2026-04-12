@@ -14,6 +14,8 @@
 	import { SplitText } from 'gsap/SplitText';
 	import { TextPlugin } from 'gsap/TextPlugin';
 	import { onMount } from 'svelte';
+	import { gameDataStore } from '$lib/data/game.svelte';
+	import { Spinner } from '$lib/components/ui/spinner';
 
 	let { children } = $props();
 
@@ -32,6 +34,15 @@
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
-{@render children()}
+{#if gameDataStore.loadingGameData}
+	<div
+		class="flex min-h-screen w-full flex-auto flex-col items-center-safe justify-center gap-y-8 bg-background p-4"
+	>
+		<h1 class="h1 slow-animate-in text-primary">Loading data...</h1>
+		<Spinner class="size-16 text-primary" />
+	</div>
+{:else}
+	{@render children()}
+{/if}
 
 <Overlay />
