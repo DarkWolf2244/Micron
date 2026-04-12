@@ -50,7 +50,6 @@ $effect.root(() => {
 			activeSchematic.edges = [];
 		}
 
-		console.log('Nodes', data.schematics.at(0)?.nodes);
 		localStorage.setItem('micron__gamedata', JSON.stringify(data));
 	});
 });
