@@ -6,7 +6,13 @@
 	import IconBack from '~icons/tabler/arrow-back';
 
 	onMount(() => {
-		gsap.from('.animate-in', { y: 25, opacity: 0, ease: 'back.out', stagger: 0.05, duration: 0.5 });
+		gsap.from('.animate-in', {
+			y: -25,
+			opacity: 0,
+			ease: 'back.out',
+			stagger: 0.05,
+			duration: 0.5
+		});
 	});
 </script>
 
