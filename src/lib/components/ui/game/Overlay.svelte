@@ -74,8 +74,12 @@
 		});
 	}
 
+	function close() {
+		overlayStore.active = false;
+	}
 	onMount(() => {
 		overlayStore.runOnce = runOnce;
+		overlayStore.close = close;
 	});
 
 	let message = $state('');

@@ -9,6 +9,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import gsap from 'gsap';
+	import { fade } from 'svelte/transition';
 	onMount(() => {
 		if (gameDataStore.data) {
 			goto('/play');
@@ -48,6 +49,7 @@
 							() => {
 								initializeNewSave();
 								goto('/play');
+								overlayStore.close();
 							}
 						);
 					}}><IconPlay />Start</Button

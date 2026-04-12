@@ -1,8 +1,11 @@
 import { browser } from '$app/environment';
+import { Schematic } from './schematic.svelte';
 
 interface GameData {
 	initialized: number;
 	schemaVersion: number;
+	schematics: Schematic[];
+	activeSchematicID: string;
 }
 
 export let gameDataStore: { data: GameData | null; loadingGameData: boolean } = $state({
@@ -11,9 +14,13 @@ export let gameDataStore: { data: GameData | null; loadingGameData: boolean } = 
 });
 
 export function initializeNewSave() {
+	const schematicId = crypto.randomUUID();
+
 	gameDataStore.data = {
 		initialized: Date.now(),
-		schemaVersion: 1
+		schemaVersion: 1,
+		schematics: [new Schematic('Untitled Schematic', schematicId)],
+		activeSchematicID: schematicId
 	};
 }
 
@@ -27,7 +34,23 @@ if (browser) {
 
 $effect.root(() => {
 	$effect(() => {
-        if (!gameDataStore.data) return;
-		localStorage.setItem('micron__gamedata', JSON.stringify(gameDataStore.data));
+		let data = gameDataStore.data;
+		if (!data) return;
+
+		let activeSchematic = data.schematics.find((s) => s.id == data.activeSchematicID);
+		if (!activeSchematic) {
+			throw 'There is no active schematic.';
+		}
+
+		if (!activeSchematic.nodes) {
+			activeSchematic.nodes = [];
+		}
+
+		if (!activeSchematic.edges) {
+			activeSchematic.edges = [];
+		}
+
+		console.log('Nodes', data.schematics.at(0)?.nodes);
+		localStorage.setItem('micron__gamedata', JSON.stringify(data));
 	});
 });
