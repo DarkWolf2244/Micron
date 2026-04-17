@@ -1,5 +1,40 @@
 import { browser } from '$app/environment';
-import { Schematic } from './schematic.svelte';
+import { createSchematicFromData, type Schematic } from './schematic.svelte';
+import GateAND from '$lib/components/ui/nodes/gates/GateAND.svelte';
+import GateOR from '$lib/components/ui/nodes/gates/GateOR.svelte';
+import GateXOR from '$lib/components/ui/nodes/gates/GateXOR.svelte';
+import GenericNode from '$lib/components/ui/nodes/GenericNode.svelte';
+import GateNOT from '$lib/components/ui/nodes/gates/GateNOT.svelte';
+import TransistorNMOS from '$lib/components/ui/nodes/transistors/TransistorNMOS.svelte';
+import TransistorPMOS from '$lib/components/ui/nodes/transistors/TransistorPMOS.svelte';
+import InputToggleButton from '$lib/components/ui/nodes/inputs/InputToggleButton.svelte';
+import type { Component } from 'svelte';
+import type { XYPosition } from '@xyflow/svelte';
+
+export let nodeRegistry: {
+	[key: string]: { [key: string]: Component<any> };
+} = {
+	Gates: {
+		AND: GateAND,
+		OR: GateOR,
+		XOR: GateXOR,
+		NOT: GateNOT
+	},
+	Transistors: {
+		NMOS: TransistorNMOS,
+		PMOS: TransistorPMOS
+	},
+	Inputs: {
+		'Toggle Button': InputToggleButton
+	}
+};
+
+export const nodeTypes = Object.fromEntries(
+	Object.entries(nodeRegistry).flatMap(([category, nodes]) =>
+		Object.entries(nodes).map(([name, component]) => [`${category}.${name}`, component])
+	)
+);
+export const nodeCategories = Object.keys(nodeRegistry);
 
 interface GameData {
 	initialized: number;
@@ -8,7 +43,10 @@ interface GameData {
 	activeSchematicID: string;
 }
 
-export let gameDataStore: { data: GameData | null; loadingGameData: boolean } = $state({
+export let gameDataStore: {
+	data: GameData | null;
+	loadingGameData: boolean;
+} = $state({
 	data: null,
 	loadingGameData: true
 });
@@ -19,7 +57,7 @@ export function initializeNewSave() {
 	gameDataStore.data = {
 		initialized: Date.now(),
 		schemaVersion: 1,
-		schematics: [new Schematic('Untitled Schematic', schematicId)],
+		schematics: [createSchematicFromData('Untitled Schematic', [], [], schematicId)],
 		activeSchematicID: schematicId
 	};
 }
@@ -39,6 +77,9 @@ $effect.root(() => {
 
 		let activeSchematic = data.schematics.find((s) => s.id == data.activeSchematicID);
 		if (!activeSchematic) {
+			console.error('Schematics:', data.schematics);
+			console.error(data.activeSchematicID);
+
 			throw 'There is no active schematic.';
 		}
 

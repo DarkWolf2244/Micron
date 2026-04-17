@@ -16,6 +16,7 @@
 	import { onMount } from 'svelte';
 	import { gameDataStore } from '$lib/data/game.svelte';
 	import { Spinner } from '$lib/components/ui/spinner';
+	import { SvelteFlowProvider } from '@xyflow/svelte';
 
 	let { children } = $props();
 
@@ -42,7 +43,9 @@
 		<Spinner class="size-16 text-primary" />
 	</div>
 {:else}
-	{@render children()}
+	<SvelteFlowProvider>
+		{@render children()}
+	</SvelteFlowProvider>
 {/if}
 
 <Overlay />
