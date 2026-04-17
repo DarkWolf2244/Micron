@@ -17,6 +17,7 @@
 	import { gameDataStore } from '$lib/data/game.svelte';
 	import { Spinner } from '$lib/components/ui/spinner';
 	import { SvelteFlowProvider } from '@xyflow/svelte';
+	import { Toaster } from '$lib/components/ui/sonner';
 
 	let { children } = $props();
 
@@ -49,3 +50,4 @@
 {/if}
 
 <Overlay />
+<Toaster />

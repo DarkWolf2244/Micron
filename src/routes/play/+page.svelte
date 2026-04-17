@@ -4,14 +4,20 @@
 	import { gameDataStore, nodeCategories, nodeRegistry, nodeTypes } from '$lib/data/game.svelte';
 	import '../svelteFlow.css';
 
-	import { onMount, type Component } from 'svelte';
 	import * as Command from '$lib/components/ui/command';
 	import { addNodeToActiveSchematic } from '$lib/data/schematic.svelte';
+	const isMac = navigator.userAgent.toLowerCase().includes('mac');
+	const altKey = isMac ? '⌥' : 'Alt';
+
+	import IconAlert from '~icons/tabler/alert-circle';
+	import * as Kbd from '$lib/components/ui/kbd/';
 
 	let activeSchematic = $derived(
 		gameDataStore.data?.schematics.find((s) => s.id == gameDataStore.data?.activeSchematicID)
 	);
 	let modalAddNodeMenuOpen = $state(false);
+	let _modalAddNodeMenuUsedButton = $state(false);
+
 	let mousePosition: XYPosition = $state({ x: 0, y: 0 });
 
 	let { screenToFlowPosition } = useSvelteFlow();
@@ -19,8 +25,13 @@
 	function handleWindowKeydown(e: KeyboardEvent) {
 		if (e.key === 'q' && e.altKey) {
 			e.preventDefault();
-			modalAddNodeMenuOpen = !modalAddNodeMenuOpen;
+			modalAddNodeMenuLaunch();
 		}
+	}
+
+	function modalAddNodeMenuLaunch(usedButton?: boolean) {
+		modalAddNodeMenuOpen = true;
+		_modalAddNodeMenuUsedButton = usedButton || false;
 	}
 
 	function handleWindowMousemove(e: MouseEvent) {
@@ -38,7 +49,7 @@
 
 {#if activeSchematic}
 	<div class="flex min-h-screen w-full flex-col">
-		<PlayRibbon></PlayRibbon>
+		<PlayRibbon onModalAddNodeMenuLaunch={modalAddNodeMenuLaunch}></PlayRibbon>
 		<SvelteFlow
 			bind:nodes={activeSchematic.nodes}
 			bind:edges={activeSchematic.edges}
@@ -73,4 +84,13 @@
 			</Command.Group>
 		{/each}
 	</Command.List>
+	{#if _modalAddNodeMenuUsedButton}
+		<div class="mt-4 rounded-2xl bg-muted p-2 text-xs">
+			<p>
+				<IconAlert class="inline text-primary" /> It's faster to use the keyboard shortcut: <Kbd.Root
+					class="bg-background">{altKey} + Q</Kbd.Root
+				>.
+			</p>
+		</div>
+	{/if}
 </Command.Dialog>
