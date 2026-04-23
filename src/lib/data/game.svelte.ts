@@ -10,6 +10,7 @@ import TransistorPMOS from '$lib/components/ui/nodes/transistors/TransistorPMOS.
 import InputToggleButton from '$lib/components/ui/nodes/inputs/InputToggleButton.svelte';
 import type { Component } from 'svelte';
 import type { XYPosition } from '@xyflow/svelte';
+import OneBitReadout from '$lib/components/ui/nodes/outputs/OneBitReadout.svelte';
 
 export let nodeRegistry: {
 	[key: string]: { [key: string]: Component<any> };
@@ -26,6 +27,9 @@ export let nodeRegistry: {
 	},
 	Inputs: {
 		'Toggle Button': InputToggleButton
+	},
+	Outputs: {
+		'OneBitReadout': OneBitReadout
 	}
 };
 
@@ -41,6 +45,7 @@ interface GameData {
 	schemaVersion: number;
 	schematics: Schematic[];
 	activeSchematicID: string;
+	activatedInputs: {id: string, active: boolean}[]
 }
 
 export let gameDataStore: {
@@ -58,7 +63,8 @@ export function initializeNewSave() {
 		initialized: Date.now(),
 		schemaVersion: 1,
 		schematics: [createSchematicFromData('Untitled Schematic', [], [], schematicId)],
-		activeSchematicID: schematicId
+		activeSchematicID: schematicId,
+		activatedInputs: []
 	};
 }
 

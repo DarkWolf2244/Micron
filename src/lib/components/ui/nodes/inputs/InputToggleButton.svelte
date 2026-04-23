@@ -1,16 +1,32 @@
 <script lang="ts">
+	import { gameDataStore } from '$lib/data/game.svelte';
 	import { Handle, Position, useUpdateNodeInternals } from '@xyflow/svelte';
 	import { onMount, type Component } from 'svelte';
 
 	let {
 		data,
-		selected
+		selected,
+		id
 	}: {
-		data: { label: string; n_inputs: number; category: string };
+		data: { label: string; n_inputs: number; category: string, active: boolean };
 		selected: boolean;
+		id: string;
 	} = $props();
 
 	let state = $state(false);
+
+	onMount(() => {
+		state = data.active;
+	});
+
+	$effect(() => {
+		const schematic = gameDataStore.data?.schematics.find(
+			(s) => s.id == gameDataStore.data?.activeSchematicID
+		)!;
+
+		const node = schematic.nodes.find((n) => n.id == id)!;
+		node.data.active = state;
+	});
 </script>
 
 <div
@@ -38,4 +54,4 @@
 		<p class="text-end">Inputs</p>
 	</div>
 </div>
-<Handle type="source" position={Position.Right} id="handle-output" />
+<Handle type="source" position={Position.Right} id="output#0" />

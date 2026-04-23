@@ -11,6 +11,8 @@
 
 	import IconAlert from '~icons/tabler/alert-circle';
 	import * as Kbd from '$lib/components/ui/kbd/';
+	import { onMount, untrack } from 'svelte';
+	import { Simulator } from '$lib/data/simulation.svelte';
 
 	let activeSchematic = $derived(
 		gameDataStore.data?.schematics.find((s) => s.id == gameDataStore.data?.activeSchematicID)
@@ -43,6 +45,38 @@
 		addNodeToActiveSchematic(type, screenToFlowPosition(mousePosition));
 		console.log(activeSchematic?.nodes);
 	}
+
+	let simulator: Simulator | null = null;
+	let tickInterval: ReturnType<typeof setInterval> | null = null;
+
+	function rebuildSimulator() {
+		if (tickInterval) clearInterval(tickInterval);
+		const nodes = activeSchematic?.nodes || [];
+		const edges = activeSchematic?.edges || [];
+		if (nodes.length === 0) {
+			simulator = null;
+			return;
+		}
+		simulator = new Simulator(nodes, edges);
+		tickInterval = setInterval(() => simulator?.tick(), 1000);
+	}
+
+	let nodeIds = $derived(activeSchematic?.nodes?.map((n) => n.id).join(',') ?? '');
+	let edgeIds = $derived(activeSchematic?.edges?.map((e) => e.id).join(',') ?? '');
+
+	$effect(() => {
+		void nodeIds;
+		void edgeIds;
+		// untrack so rebuildSimulator's reads of activeSchematic.nodes/edges
+		// don't become tracked dependencies of this effect
+		untrack(() => rebuildSimulator());
+	});
+
+	onMount(() => {
+		return () => {
+			if (tickInterval) clearInterval(tickInterval);
+		};
+	});
 </script>
 
 <svelte:window onkeydown={handleWindowKeydown} onmousemove={handleWindowMousemove} />
