@@ -43,6 +43,13 @@ const executors: {
 			outputs: [result]
 		};
 	},
+	'Gates.NOR': (inputs, _nodeData) => {
+		const result = !(inputs[0] || inputs[1]);
+		return {
+			active: result,
+			outputs: [result]
+		};
+	},
 	'Outputs.OneBitReadout': (inputs, _nodeData) => {
 		return {
 			active: inputs[0] ?? false,
@@ -64,6 +71,7 @@ const metadataRegistry: {
 		'Gates.XOR': 2,
 		'Gates.OR': 2,
 		'Gates.NOT': 1,
+		'Gates.NOR': 2,
 		'Outputs.OneBitReadout': 1
 	}
 };

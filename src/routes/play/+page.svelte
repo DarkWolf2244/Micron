@@ -13,6 +13,8 @@
 	import * as Kbd from '$lib/components/ui/kbd/';
 	import { onMount, untrack } from 'svelte';
 	import { Simulator } from '$lib/data/simulation.svelte';
+	import TutorialOverlay from '$lib/components/ui/game/TutorialOverlay.svelte';
+	import { TutorialManager } from '$lib/data/tutorial.svelte';
 
 	let activeSchematic = $derived(
 		gameDataStore.data?.schematics.find((s) => s.id == gameDataStore.data?.activeSchematicID)
@@ -43,6 +45,7 @@
 	function handleModalAddNodeMenuItemOnClick(group: string, item: string) {
 		const type = group + '.' + item;
 		addNodeToActiveSchematic(type, screenToFlowPosition(mousePosition));
+		modalAddNodeMenuOpen = false;
 		console.log(activeSchematic?.nodes);
 	}
 
@@ -58,12 +61,13 @@
 			return;
 		}
 		simulator = new Simulator(nodes, edges);
-		tickInterval = setInterval(() => simulator?.tick(), 1000);
+		tickInterval = setInterval(() => simulator?.tick(), 10);
 	}
 
 	let nodeIds = $derived(activeSchematic?.nodes?.map((n) => n.id).join(',') ?? '');
 	let edgeIds = $derived(activeSchematic?.edges?.map((e) => e.id).join(',') ?? '');
 
+	let tutorialManager = new TutorialManager();
 	$effect(() => {
 		void nodeIds;
 		void edgeIds;
@@ -98,6 +102,7 @@
 			proOptions={{
 				hideAttribution: true
 			}}
+			snapGrid={[36, 36]}
 		>
 			<Background patternColor={'var(--primary)'} gap={36} />
 		</SvelteFlow>
@@ -128,3 +133,5 @@
 		</div>
 	{/if}
 </Command.Dialog>
+
+<TutorialOverlay />

@@ -11,6 +11,9 @@ import InputToggleButton from '$lib/components/ui/nodes/inputs/InputToggleButton
 import type { Component } from 'svelte';
 import type { XYPosition } from '@xyflow/svelte';
 import OneBitReadout from '$lib/components/ui/nodes/outputs/OneBitReadout.svelte';
+import GateNOR from '$lib/components/ui/nodes/gates/GateNOR.svelte';
+
+
 
 export let nodeRegistry: {
 	[key: string]: { [key: string]: Component<any> };
@@ -19,7 +22,8 @@ export let nodeRegistry: {
 		AND: GateAND,
 		OR: GateOR,
 		XOR: GateXOR,
-		NOT: GateNOT
+		NOT: GateNOT,
+		NOR: GateNOR
 	},
 	Transistors: {
 		NMOS: TransistorNMOS,
@@ -29,7 +33,7 @@ export let nodeRegistry: {
 		'Toggle Button': InputToggleButton
 	},
 	Outputs: {
-		'OneBitReadout': OneBitReadout
+		OneBitReadout: OneBitReadout
 	}
 };
 
@@ -45,7 +49,7 @@ interface GameData {
 	schemaVersion: number;
 	schematics: Schematic[];
 	activeSchematicID: string;
-	activatedInputs: {id: string, active: boolean}[]
+	activatedInputs: { id: string; active: boolean }[];
 }
 
 export let gameDataStore: {

@@ -4,7 +4,8 @@
 
 	let {
 		data,
-		selected
+		selected,
+		topTitle
 	}: {
 		data: {
 			label: string;
@@ -13,8 +14,10 @@
 			n_outputs?: number;
 			category: string;
 			active?: boolean;
+			topTitle?: string;
 		};
 		selected: boolean;
+		topTitle?: string;
 	} = $props();
 
 	let Icon = $derived(data.icon);
@@ -36,8 +39,6 @@
 			top: `${((index + 1) / (count + 1)) * 100}%`
 		}));
 	});
-
-
 </script>
 
 <div
@@ -45,6 +46,7 @@
 		? ' outline-primary'
 		: 'outline-transparent'} transition-all"
 >
+	<p>{topTitle}</p>
 	<div class="flex flex-row items-center space-x-4 p-2">
 		{#if Icon}
 			<Icon />

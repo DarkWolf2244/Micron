@@ -45,7 +45,9 @@
 	</div>
 {:else}
 	<SvelteFlowProvider>
-		{@render children()}
+		<div class="overflow-hidden relative">
+			{@render children()}
+		</div>
 	</SvelteFlowProvider>
 {/if}
 

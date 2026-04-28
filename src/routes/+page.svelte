@@ -44,6 +44,7 @@
 								'No save was detected. Would you like to create a new one?',
 								'Yes, continue',
 								() => {
+									// print()
 									initializeNewSave();
 									goto('/play');
 									overlayStore.close();
