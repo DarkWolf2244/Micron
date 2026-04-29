@@ -375,6 +375,7 @@ export class TutorialManager {
 		});
 	}
 
+	makeANDGate() {}
 
 	constructor() {
 		tutorial.ready.then(async () => {
@@ -382,7 +383,8 @@ export class TutorialManager {
 
 			let methods: { [key: string]: () => void } = {
 				onboarding: this.onboarding,
-				addNodes: this.addNodes
+				addNodes: this.addNodes,
+				makeANDGate: this.makeANDGate
 			};
 
 			if (!state) {

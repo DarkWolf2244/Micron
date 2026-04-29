@@ -15,6 +15,7 @@
 	import { Simulator } from '$lib/data/simulation.svelte';
 	import TutorialOverlay from '$lib/components/ui/game/TutorialOverlay.svelte';
 	import { TutorialManager } from '$lib/data/tutorial.svelte';
+	import Sidebar from '$lib/components/ui/game/Sidebar.svelte';
 
 	let activeSchematic = $derived(
 		gameDataStore.data?.schematics.find((s) => s.id == gameDataStore.data?.activeSchematicID)
@@ -86,26 +87,29 @@
 <svelte:window onkeydown={handleWindowKeydown} onmousemove={handleWindowMousemove} />
 
 {#if activeSchematic}
-	<div class="flex min-h-screen w-full flex-col">
+	<div class="flex h-screen w-full flex-col">
 		<PlayRibbon onModalAddNodeMenuLaunch={modalAddNodeMenuLaunch}></PlayRibbon>
-		<SvelteFlow
-			bind:nodes={activeSchematic.nodes}
-			bind:edges={activeSchematic.edges}
-			{nodeTypes}
-			defaultEdgeOptions={{
-				class: 'bg-primary',
-				animated: true,
-				type: 'step'
-			}}
-			class="dark grow"
-			deleteKey={['Delete', 'Backspace', 'x']}
-			proOptions={{
-				hideAttribution: true
-			}}
-			snapGrid={[36, 36]}
-		>
-			<Background patternColor={'var(--primary)'} gap={36} />
-		</SvelteFlow>
+		<div class="relative flex h-full w-full grow flex-row">
+			<SvelteFlow
+				bind:nodes={activeSchematic.nodes}
+				bind:edges={activeSchematic.edges}
+				{nodeTypes}
+				defaultEdgeOptions={{
+					class: 'bg-primary',
+					animated: true,
+					type: 'step'
+				}}
+				class="dark h-full w-full grow"
+				deleteKey={['Delete', 'Backspace', 'x']}
+				proOptions={{
+					hideAttribution: true
+				}}
+				snapGrid={[36, 36]}
+			>
+				<Background patternColor={'var(--primary)'} gap={36} />
+			</SvelteFlow>
+			<Sidebar isExpanded={false} />
+		</div>
 	</div>
 {/if}
 
