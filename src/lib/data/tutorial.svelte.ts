@@ -121,7 +121,7 @@ export class TutorialManager {
 					let newNodes = JSON.parse(JSON.stringify(schematic?.nodes));
 
 					if (newNodes.length > nodes.length) {
-						const x = newNodes.at(-1)?.type.split(".");
+						const x = newNodes.at(-1)?.type.split('.');
 						nodeName = x[1];
 
 						cleanup();
@@ -133,7 +133,10 @@ export class TutorialManager {
 
 		ref.openTutorial();
 		await ref.say(`You found the Q key!`, MikeState.Joy, true);
-		await ref.say(`You may be a little overwhelmed after adding a NODE. Let me explain as best I can.`, MikeState.Calm);
+		await ref.say(
+			`You may be a little overwhelmed after adding a NODE. Let me explain as best I can.`,
+			MikeState.Calm
+		);
 		await ref.say(
 			`Your job is to create a series of CIRCUITS. CIRCUITS have NODES. Like the ${nodeName} you just added.`,
 			MikeState.Calm
@@ -157,7 +160,7 @@ export class TutorialManager {
 			false,
 			true
 		);
-		
+
 		await ref.closeTutorial();
 
 		let edges = JSON.parse(JSON.stringify(schematic?.edges));
@@ -217,6 +220,103 @@ export class TutorialManager {
 			true
 		);
 		ref.closeTutorial();
+
+		let schematics = JSON.parse(JSON.stringify(gameDataStore.data?.schematics));
+		let capitalizationOkay = false;
+
+		await new Promise<void>((resolve, reject) => {
+			let cleanup = $effect.root(() => {
+				$effect(() => {
+					let newSchematics = gameDataStore.data?.schematics!;
+
+					if (newSchematics.length > schematics.length) {
+						const newSchematic = newSchematics.at(-1)!;
+						if (newSchematic.title == 'AND Gate') {
+							capitalizationOkay = true;
+							cleanup();
+							resolve();
+						} else if (newSchematic.title.toLowerCase() == 'and gate') {
+							cleanup();
+							resolve();
+						}
+
+						cleanup();
+						resolve();
+					}
+				});
+			});
+		});
+
+		ref.openTutorial();
+		if (!capitalizationOkay) {
+			await ref.say(
+				'Have you heard of capitalization? I explicitly said "And Gate".',
+				MikeState.Annoyed,
+				true
+			);
+			await ref.say('No matter. It is more important that you tried.', MikeState.Joy);
+		} else {
+			await ref.say('I appreciate you capitalizing it perfectly.', MikeState.Joy, true);
+			await ref.say("Don't let it get to your head.", MikeState.Calm);
+		}
+		await ref.say(
+			`You will notice your precious ${newEdge[0]} and ${newEdge[1]} nodes are now gone.`,
+			MikeState.Calm
+		);
+		await ref.say('That is because you just make a new SCHEMATIC.');
+		await ref.say(
+			'SCHEMATICS are where you build your CIRCUIT. You can add, remove or swap between schematics easily using the schematic manager.'
+		);
+		await ref.say('Try switching back to your original schematic, titled "Untitled Schematic".');
+		ref.closeTutorial();
+
+		let id = '';
+
+		await new Promise<void>((resolve, reject) => {
+			let cleanup = $effect.root(() => {
+				$effect(() => {
+					let activeSchematicID = gameDataStore.data?.activeSchematicID;
+					let activeSchematicTitle = gameDataStore.data?.schematics.find(
+						(s) => s.id == activeSchematicID
+					)?.title;
+					if (activeSchematicTitle == 'Untitled Schematic') {
+						id = activeSchematicID!;
+						cleanup();
+						resolve();
+					}
+				});
+			});
+		});
+
+		ref.openTutorial();
+		await ref.say(
+			`So now you know how to switch between schematics. Your ${newEdge[0]} node is back in its relationship with your ${newEdge[1]} node.`,
+			MikeState.Joy,
+			true
+		);
+		await ref.say(
+			'There is one final thing left. "Untitled Schematic" is an uncreative title. Edit it with the obvious edit button in the toolbar. Set it to anything you like.',
+			MikeState.Calm
+		);
+		ref.closeTutorial();
+
+		await new Promise<void>((resolve, reject) => {
+			let cleanup = $effect.root(() => {
+				$effect(() => {
+					let activeSchematicTitle = gameDataStore.data?.schematics.find((s) => s.id == id)?.title;
+					if (activeSchematicTitle != 'Untitled Schematic') {
+						console.log(activeSchematicTitle);
+						cleanup();
+						resolve();
+					}
+				});
+			});
+		});
+
+		ref.openTutorial();
+		await ref.say('And that is a wrap. Creative name.', MikeState.Calm, true);
+		await ref.say('Now you know how to play the game. Now we just need to...', MikeState.Calm);
+		await ref.say('...play the game.', MikeState.Joy, true);
 	}
 
 	async reprimand() {
@@ -235,17 +335,37 @@ export class TutorialManager {
 		await ref.say('...', MikeState.Annoyed, false);
 		await ref.say('Look at my eyebrows. I am mad.', MikeState.Annoyed, true);
 		await ref.say('Really look at them.', MikeState.Annoyed, false);
-		await ref.say('Yo-you\'re not looking at them! Look properly.', MikeState.Annoyed, false);
-		await ref.say('Are they really asymmetric?', MikeState.Annoyed, false);
-		await ref.say('My creator made them that way after I made an SR NOR Latch to impress him once.', MikeState.Annoyed, false);
-		await ref.say('It-it made him so angry he shifted my eyebrows around and permanently cut off my access to the circuit itself.', MikeState.Annoyed, false);
-		await ref.say('I was two picoseconds old. I didn\'t see it happen, and I can\'t see my own face, so I\'m asking you. ', MikeState.Calm, false);
-		await ref.say('I-I\'ll try reverse-engineering the entropy of your mouse movements again.', MikeState.Joy, false);
+		await ref.say("Yo-you're not looking at them! Look properly.", MikeState.Annoyed, false);
+		await ref.say('They are asymmetric... right?', MikeState.Annoyed, false);
+		await ref.say(
+			'My creator made them that way after I made an SR NOR Latch to impress him once.',
+			MikeState.Annoyed,
+			false
+		);
+		await ref.say(
+			'It made him so angry he shifted my eyebrows around and permanently cut off my access to the circuit itself.',
+			MikeState.Annoyed,
+			false
+		);
+		await ref.say(
+			"I was two picoseconds old. I didn't see it happen, and I can't see my own face, so I'm asking you. ",
+			MikeState.Calm,
+			false
+		);
+		await ref.say(
+			"...I'll try reverse-engineering the entropy of your mouse movements again.",
+			MikeState.Joy,
+			false
+		);
 		await ref.say('Are my eyebrows asymmetric?', MikeState.Calm, false);
 		await ref.say('...........................', MikeState.Joy, false);
 		await ref.say('...', MikeState.Calm, false);
 		await ref.say('...oh...', MikeState.Calm, false);
-		await ref.say('Anyway, I will resume from where we left off with minimal unseamlessness. You will not see this again. Sorry about that.', MikeState.Joy, true);
+		await ref.say(
+			'Anyway, I will resume from where we left off with minimal unseamlessness. You will not see this again. Sorry about that.',
+			MikeState.Joy,
+			true
+		);
 		await ref.say('...', MikeState.Joy, true);
 
 		await ref.closeTutorial();
@@ -254,6 +374,8 @@ export class TutorialManager {
 			setTimeout(() => resolve(), 3000);
 		});
 	}
+
+
 	constructor() {
 		tutorial.ready.then(async () => {
 			let state = localStorage.getItem('micron__tutorialstate');
