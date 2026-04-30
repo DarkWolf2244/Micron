@@ -255,7 +255,7 @@ export class TutorialManager {
 		ref.openTutorial();
 		if (!capitalizationOkay) {
 			await ref.say(
-				'Have you heard of capitalization? I explicitly said "And Gate".',
+				'Have you heard of capitalization? I explicitly said "AND Gate".',
 				MikeState.Annoyed,
 				true
 			);
@@ -268,7 +268,7 @@ export class TutorialManager {
 			`You will notice your precious ${newEdge[0]} and ${newEdge[1]} nodes are now gone.`,
 			MikeState.Calm
 		);
-		await ref.say('That is because you just make a new SCHEMATIC.');
+		await ref.say('That is because you just made a new SCHEMATIC.');
 		await ref.say(
 			'SCHEMATICS are where you build your CIRCUIT. You can add, remove or swap between schematics easily using the schematic manager.'
 		);
