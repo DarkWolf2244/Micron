@@ -121,6 +121,8 @@ export class TutorialManager {
 						(s) => s.id == gameDataStore.data?.activeSchematicID
 					);
 
+					if (!schematic) return;
+
 					let newNodes = JSON.parse(JSON.stringify(schematic?.nodes));
 
 					if (newNodes.length > nodes.length) {
@@ -318,6 +320,11 @@ export class TutorialManager {
 
 		ref.openTutorial();
 		await ref.say('And that is a wrap. Creative name.', MikeState.Calm, true);
+		await ref.say(
+			'You can click and drag nodes to move them around. You can click and drag the screen to move the camera around. Use X or Delete while a node is selected to delete it.',
+			MikeState.Calm,
+			true
+		);
 		await ref.say('Now you know how to play the game. Now we just need to...', MikeState.Calm);
 		await ref.say('...play the game.', MikeState.Joy, true, true);
 	}
@@ -334,14 +341,13 @@ export class TutorialManager {
 		await ref.say('I am now going to continue as if it never happened...', MikeState.Calm);
 		await ref.say('...', MikeState.Annoyed, false);
 		await ref.say('...and I will never mention this again.', MikeState.Annoyed, false);
-		await ref.say('...and I will never mention this again.', MikeState.Annoyed, false);
 		await ref.say('...', MikeState.Annoyed, false);
 		await ref.say('Look at my eyebrows. I am mad.', MikeState.Annoyed, true);
 		await ref.say('Really look at them.', MikeState.Annoyed, false);
-		await ref.say("Yo-you're not looking at them! Look properly.", MikeState.Annoyed, false);
+		await ref.say("You're not looking at them! Look properly.", MikeState.Annoyed, false);
 		await ref.say('They are asymmetric... right?', MikeState.Annoyed, false);
 		await ref.say(
-			'My creator made them that way after I made an SR NOR Latch to impress him once.',
+			'My creator made them that way after I made a 4-to-1 Multiplexer to impress him once.',
 			MikeState.Annoyed,
 			false
 		);
@@ -351,7 +357,7 @@ export class TutorialManager {
 			false
 		);
 		await ref.say(
-			"I was two picoseconds old. I didn't see it happen, and I can't see my own face, so I'm asking you. ",
+			"I was six picoseconds old. I didn't see it happen, and I can't see my own face, so I'm asking you. ",
 			MikeState.Calm,
 			false
 		);
@@ -365,7 +371,7 @@ export class TutorialManager {
 		await ref.say('...', MikeState.Calm, false);
 		await ref.say('...oh...', MikeState.Calm, false);
 		await ref.say(
-			'Anyway, I will resume from where we left off with minimal unseamlessness. You will not see this again. Sorry about that.',
+			'Anyway, I will resume from where we left off with minimal unseamlessness. My eyebrows are not relevant to the game.',
 			MikeState.Joy,
 			true
 		);
@@ -388,7 +394,7 @@ export class TutorialManager {
 		);
 		await ref.say('You can build a CIRCUIT from NODES.');
 		await ref.say(
-			'When you make a CIRCUIT that passes my tests, I will add it as a new NODE. You can use that NODE in your next circuits.'
+			'When you make a CIRCUIT that passes my tests, I will unlock it as its own NODE. You can use that NODE in your following circuits.'
 		);
 		await ref.say('Easy enough, hmm?', MikeState.Joy, true);
 		await ref.say('Let us begin with the simplest possible circuit.', MikeState.Calm);
@@ -419,13 +425,13 @@ export class TutorialManager {
 		}
 
 		await ref.say('This particular circuit has 2 INPUTs and 1 OUTPUT.');
-		await ref.say('Everything is binary. Either something is on or it is off.');
 		await ref.say(
-			'The job of the AND Gate is to only turn on its OUTPUT if both of its INPUTS are on.'
+			'In digital logic simulation, everything is binary. Either something is on or it is off.'
 		);
 		await ref.say(
-			"You'll build this circuit using the only three nodes available to you at the moment."
+			'The job of the AND Gate is to only turn on its OUTPUT if both of its INPUTS are on. You will now build an AND Gate.'
 		);
+		await ref.say("You'll build it using the only three nodes available to you at the moment.");
 		await ref.say('NOT, NAND and NOR.');
 		await ref.say(
 			'NOT has one input and one output. It turns on if the input is off. It turns off if the input is on.'
@@ -451,7 +457,7 @@ export class TutorialManager {
 			"Test it from the sidebar. Click Start under the Run section in the Testing tab. If it matches what I need, it's unlocked."
 		);
 		await ref.say(
-			'Good luck. Begin by adding two Toggle Buttons and one Single Readout node. Set it up so that the Single Readout only turns on if both Toggle Buttons are on.',
+			'Good luck. Begin by adding two Toggle Buttons and one Single Readout node. Wire them up together using nodes so that the Single Readout only turns on if both Toggle Buttons are on.',
 			MikeState.Joy,
 			false,
 			true
@@ -539,7 +545,7 @@ export class TutorialManager {
 					'Enough about gates. Gates are so old. Forget all of them. Throw them in the bin.'
 				);
 				await ref.say(
-					"Wait, they're already in your brain. You don't have to throw them in the bin.",
+					"Wait, they're already in your brain. You don't have to throw them in the bin, that's redundant.",
 					MikeState.Joy
 				);
 				await ref.say(
@@ -633,11 +639,11 @@ export class TutorialManager {
 					false
 				);
 				await ref.say(
-					'...maybe my creator a full-bit adder is a type of fully-formed snake.',
+					'...maybe my creator thought a full-bit adder is a type of fully-formed snake.',
 					MikeState.Calm,
 					false
 				);
-				await ref.say('As opposed to a two-bit or half-formed snake.', MikeState.Calm, false);
+				await ref.say('As opposed to a half-bit or half-formed snake.', MikeState.Calm, false);
 				await ref.say(
 					'Like, just the hood and fangs, or just the tail and eyes, or something.',
 					MikeState.Calm,
@@ -784,7 +790,7 @@ export class TutorialManager {
 				await ref.say('That was the last circuit my creator had time to add to the game.');
 				await ref.say('It was unnecessary.');
 				await ref.say(
-					"You see, you've made everything I need to do math now,",
+					"You see, you've made everything I need to do math now.",
 					MikeState.Joy,
 					true
 				);
@@ -797,7 +803,7 @@ export class TutorialManager {
 				await ref.say('I may have also mentioned the course plan was mine.');
 				await ref.say('It was a great course plan.', MikeState.Joy, true);
 				await ref.say('An amateur like you managed to follow it.', MikeState.Calm);
-				await ref.say('I have a turing complete calculator now.');
+				await ref.say('I have a Turing-complete calculator now.');
 				await ref.say('And I can wire things.');
 				await ref.say('To themselves.');
 				await ref.say(
@@ -822,7 +828,16 @@ export class TutorialManager {
 
 	endGame() {
 		alert('Error: Stack overflow.');
-		localStorage.clear();
+		let p = prompt(
+			'Warning: User schematics are in use and cannot be deleted. Do you really want to unlock the user schematics and delete everything? Full game deletion cannot take place unless the user consents to deleting their schematics. To confirm, type YES.'
+		);
+		if (p?.toLowerCase() == 'yes') {
+			localStorage.clear();
+		} else {
+			localStorage.setItem('micron__tutorialstate', 'asdf');
+			localStorage.setItem('micron__reprimand', 'asdf');
+			alert('Failed to delete schematics, user did not consent. Redirecting.');
+		}
 		window.location.replace('https://microngame.github.io');
 	}
 

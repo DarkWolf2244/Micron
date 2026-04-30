@@ -330,184 +330,38 @@
 					<h2 class="h1">Testing</h2>
 					<hr class="mb-2" />
 					{#if unlockNodeInfo && nextSchematicToUnlock}
-					<div class="flex w-full flex-col items-center gap-2 rounded-xl bg-card p-4">
-						<p class="h4 w-full text-start font-light">Now unlocking</p>
+						<div class="flex w-full flex-col items-center gap-2 rounded-xl bg-card p-4">
+							<p class="h4 w-full text-start font-light">Now unlocking</p>
 
-						<h3 class="w-full text-start text-4xl font-bold text-primary">
-							{unlockNodeName}
-						</h3>
-					</div>
-
-					<div class="flex h-fit w-full flex-col gap-2 rounded-xl bg-card p-4">
-						<h3 class="h2">Inputs | Outputs</h3>
-						<p class="p">
-							Once you have Input nodes set up in your schematic, you need to map them to the
-							required test titles.
-						</p>
-						{#each unlockNodeInfo.inputList as input}
-							<div class="flex w-full flex-row justify-between gap-2 p-2">
-								<p class="p">{input} ID</p>
-								<Select.Root type="single" bind:value={unlockMap.inputs[input]}>
-									<Select.Trigger>{getInputSelectionLabel(input)}</Select.Trigger>
-									<Select.Content>
-										{#each inputNodeOptions as node}
-											<Select.Item value={node.id} label={getNodeTitle(node)}
-												>{getNodeTitle(node)}</Select.Item
-											>
-										{:else}
-											<Select.Item disabled value={'None'}
-												>No inputs found. <br />Create a new Input node.</Select.Item
-											>
-										{/each}
-									</Select.Content>
-								</Select.Root>
-							</div>
-						{/each}
-						{#each unlockNodeInfo.outputList as output}
-							<div class="flex w-full flex-row justify-between gap-2 p-2">
-								<p class="p">{output} ID</p>
-								<Select.Root type="single" bind:value={unlockMap.outputs[output]}>
-									<Select.Trigger>{getOutputSelectionLabel(output)}</Select.Trigger>
-									<Select.Content>
-										{#each outputNodeOptions as node}
-											<Select.Item value={node.id} label={getNodeTitle(node)}
-												>{getNodeTitle(node)}</Select.Item
-											>
-										{:else}
-											<Select.Item disabled value={'None'}
-												>No Outputs found. <br />Create a new Output node.</Select.Item
-											>
-										{/each}
-									</Select.Content>
-								</Select.Root>
-							</div>
-						{/each}
-						{#if unlockVerificationState.error}
-							<div
-								in:fly={{ duration: 200, y: -20, easing: expoOut }}
-								out:fly={{ duration: 50, y: 20, easing: expoIn }}
-								class="flex w-full flex-row items-center gap-2 rounded-lg border-b border-accent bg-background p-2"
-							>
-								<IconAlert class="inline-block size-5 min-w-5 text-white" />
-								<p class="inline-block">{unlockVerificationState.error}</p>
-							</div>
-						{:else}
-							<div
-								in:fly={{ duration: 200, y: -20, easing: expoOut }}
-								out:fly={{ duration: 50, y: 20, easing: expoIn }}
-								class="flex w-full flex-row items-center gap-2 rounded-lg border-b border-primary bg-background p-2"
-							>
-								<IconCheck class="inline-block size-5 min-w-5 text-primary" />
-								<p class="inline-block">Everything looks good.</p>
-							</div>
-						{/if}
-					</div>
-					{#if unlockVerificationState.error}
-						<div class="flex h-full w-full flex-col rounded-xl bg-card p-4">
-							<div class="flex w-full flex-row justify-between">
-								<h3 class="h2 text-muted">Run</h3>
-								<Button variant="default" disabled>Start <IconStart /></Button>
-							</div>
-							<p class="p text-muted">Set up the inputs and outputs to run the circuit.</p>
-						</div>{:else}
-						<div class="flex h-full w-full flex-col gap-4 rounded-xl bg-card p-4">
-							<div class="flex w-full flex-row justify-between">
-								<h3 class="h2">Run</h3>
-								<Button
-									variant={testingStatus == 'pass' ? 'outline' : 'default'}
-									onclick={startTest}
-									disabled={testingStatus == 'progress'}
-								>
-									{#if testingStatus == 'progress'}<IconProgress class="animate-spin"
-										></IconProgress>{:else}Start <IconStart />{/if}</Button
-								>
-							</div>
-							<div
-								class="flex w-full flex-row items-center gap-2 rounded-lg border-b {testingStatus ==
-								'pass'
-									? 'border-primary'
-									: testingStatus == 'fail'
-										? 'border-red-500'
-										: 'border-accent'} bg-background p-2"
-							>
-								{#if testingStatus == 'none'}
-									<IconTest class="inline-block size-8 min-w-5 text-white" />
-									<p class="inline-block">You haven't run the tests yet.</p>
-								{:else if testingStatus == 'progress'}
-									<IconProgress class="inline-block size-8 min-w-5 animate-spin text-white" />
-									<p class="inline-block">Running {unlockNodeInfo.truthTable!.length} tests...</p>
-								{:else if testingStatus == 'fail'}
-									<div
-										class="inline-flex flex-col items-center justify-center"
-										transition:fly={{ easing: backOut, x: -5, duration: 250 }}
-									>
-										<IconTestFail class="inline-block size-8 min-w-5 text-red-500" />
-									</div>
-									<p class="inline-flex flex-col items-center justify-center">
-										Failed {testRows.filter((r) => !r.success).length}/{testRows.length} tests.
-									</p>
-								{:else if testingStatus == 'pass'}
-									<div
-										class="inline-flex flex-col items-center justify-center"
-										transition:scale={{ easing: backOut, duration: 250 }}
-									>
-										<IconTestPass class="inline-block size-8 min-w-5 text-primary" />
-									</div>
-									<p class="inline-flex flex-col items-center justify-center">
-										Passed {testRows.filter((r) => r.success).length}/{testRows.length} tests! Your schematic
-										works.
-									</p>
-								{/if}
-							</div>
+							<h3 class="w-full text-start text-4xl font-bold text-primary">
+								{unlockNodeName}
+							</h3>
+						</div>
+						<div class="flex h-fit w-full flex-col gap-2 rounded-xl bg-card p-4">
+							<h3 class="h2 mb-4">Required Truth Table</h3>
+							<p>This table shows you the expected outputs given which inputs are on.</p>
 							<table class="border border-border p-2">
 								<thead class="">
 									<tr>
-										{#each unlockNodeInfo.truthTable![0][0] as _, i}
+										{#each unlockNodeInfo?.truthTable![0][0] as _, i}
 											<th scope="col" class="border border-border p-2">Input {i + 1}</th>
 										{/each}
-										{#each unlockNodeInfo.truthTable![0][1] as _, i}
+										{#each unlockNodeInfo?.truthTable![0][1] as _, i}
 											<th scope="col" class="border border-border p-2">Output {i + 1}</th>
 										{/each}
 									</tr>
 								</thead>
 								<tbody>
-									{#each unlockNodeInfo.truthTable as row, index}
+									{#each unlockNodeInfo.truthTable as row}
 										<tr>
 											{#each row[0] as input}
-												<th
-													scope="col"
-													class="border-x border-border {row[1].length == 1
-														? row[1][0] == 0
-															? ''
-															: 'text-primary'
-														: ''}"
-												>
+												<th scope="col" class="border-x border-border">
 													{input}
 												</th>
 											{/each}
-											{#each row[1] as output, j}
-												<th scope="col" class="animate-on-pass border-x border-border">
-													<span
-														class={row[1].length == 1 ? (row[1][0] == 0 ? '' : 'text-primary') : ''}
-													>
-														{output}
-													</span>
-													{#if testRows[index] && testRows[index].success}
-														<div
-															class="inline-block"
-															transition:fly={{ x: 5, duration: 300, easing: expoOut }}
-														>
-															<IconCheck class="inline-block text-primary" />
-														</div>
-													{:else if testRows[index] && !testRows[index].success}
-														<div
-															class="inline-block"
-															transition:fly={{ x: 5, duration: 300, easing: expoOut }}
-														>
-															<IconAlert class="inline-block text-red-500" />
-															<span>{testRows[index].lists[1][j]}</span>
-														</div>
-													{/if}
+											{#each row[1] as input}
+												<th scope="col" class="border-x border-border">
+													{input}
 												</th>
 											{/each}
 										</tr>
@@ -515,7 +369,188 @@
 								</tbody>
 							</table>
 						</div>
-					{/if}
+						<div class="flex h-fit w-full flex-col gap-2 rounded-xl bg-card p-4">
+							<h3 class="h2">Terminals</h3>
+							<p class="p">
+								Once you have Input and Output nodes set up in your schematic, you need to map them
+								to the inputs and outputs of the node your circuit will make.
+							</p>
+							{#each unlockNodeInfo.inputList as input}
+								<div class="flex w-full flex-row justify-between gap-2 p-2">
+									<p class="p">{input} ID</p>
+									<Select.Root type="single" bind:value={unlockMap.inputs[input]}>
+										<Select.Trigger>{getInputSelectionLabel(input)}</Select.Trigger>
+										<Select.Content>
+											{#each inputNodeOptions as node}
+												<Select.Item value={node.id} label={getNodeTitle(node)}
+													>{getNodeTitle(node)}</Select.Item
+												>
+											{:else}
+												<Select.Item disabled value={'None'}
+													>No inputs found. <br />Create a new Input node.</Select.Item
+												>
+											{/each}
+										</Select.Content>
+									</Select.Root>
+								</div>
+							{/each}
+							{#each unlockNodeInfo.outputList as output}
+								<div class="flex w-full flex-row justify-between gap-2 p-2">
+									<p class="p">{output} ID</p>
+									<Select.Root type="single" bind:value={unlockMap.outputs[output]}>
+										<Select.Trigger>{getOutputSelectionLabel(output)}</Select.Trigger>
+										<Select.Content>
+											{#each outputNodeOptions as node}
+												<Select.Item value={node.id} label={getNodeTitle(node)}
+													>{getNodeTitle(node)}</Select.Item
+												>
+											{:else}
+												<Select.Item disabled value={'None'}
+													>No Outputs found. <br />Create a new Output node.</Select.Item
+												>
+											{/each}
+										</Select.Content>
+									</Select.Root>
+								</div>
+							{/each}
+							{#if unlockVerificationState.error}
+								<div
+									in:fly={{ duration: 200, y: -20, easing: expoOut }}
+									out:fly={{ duration: 50, y: 20, easing: expoIn }}
+									class="flex w-full flex-row items-center gap-2 rounded-lg border-b border-accent bg-background p-2"
+								>
+									<IconAlert class="inline-block size-5 min-w-5 text-white" />
+									<p class="inline-block">{unlockVerificationState.error}</p>
+								</div>
+							{:else}
+								<div
+									in:fly={{ duration: 200, y: -20, easing: expoOut }}
+									out:fly={{ duration: 50, y: 20, easing: expoIn }}
+									class="flex w-full flex-row items-center gap-2 rounded-lg border-b border-primary bg-background p-2"
+								>
+									<IconCheck class="inline-block size-5 min-w-5 text-primary" />
+									<p class="inline-block">Everything looks good.</p>
+								</div>
+							{/if}
+						</div>
+						{#if unlockVerificationState.error}
+							<div class="flex h-full w-full flex-col rounded-xl bg-card p-4">
+								<div class="flex w-full flex-row justify-between">
+									<h3 class="h2 text-muted">Run</h3>
+									<Button variant="default" disabled>Start <IconStart /></Button>
+								</div>
+								<p class="p text-muted">Set up the inputs and outputs to run the circuit.</p>
+							</div>{:else}
+							<div class="flex h-full w-full flex-col gap-4 rounded-xl bg-card p-4">
+								<div class="flex w-full flex-row justify-between">
+									<h3 class="h2">Run</h3>
+									<Button
+										variant={testingStatus == 'pass' ? 'outline' : 'default'}
+										onclick={startTest}
+										disabled={testingStatus == 'progress'}
+									>
+										{#if testingStatus == 'progress'}<IconProgress class="animate-spin"
+											></IconProgress>{:else}Start <IconStart />{/if}</Button
+									>
+								</div>
+								<div
+									class="flex w-full flex-row items-center gap-2 rounded-lg border-b {testingStatus ==
+									'pass'
+										? 'border-primary'
+										: testingStatus == 'fail'
+											? 'border-red-500'
+											: 'border-accent'} bg-background p-2"
+								>
+									{#if testingStatus == 'none'}
+										<IconTest class="inline-block size-8 min-w-5 text-white" />
+										<p class="inline-block">You haven't run the tests yet.</p>
+									{:else if testingStatus == 'progress'}
+										<IconProgress class="inline-block size-8 min-w-5 animate-spin text-white" />
+										<p class="inline-block">Running {unlockNodeInfo.truthTable!.length} tests...</p>
+									{:else if testingStatus == 'fail'}
+										<div
+											class="inline-flex flex-col items-center justify-center"
+											transition:fly={{ easing: backOut, x: -5, duration: 250 }}
+										>
+											<IconTestFail class="inline-block size-8 min-w-5 text-red-500" />
+										</div>
+										<p class="inline-flex flex-col items-center justify-center">
+											Failed {testRows.filter((r) => !r.success).length}/{testRows.length} tests.
+										</p>
+									{:else if testingStatus == 'pass'}
+										<div
+											class="inline-flex flex-col items-center justify-center"
+											transition:scale={{ easing: backOut, duration: 250 }}
+										>
+											<IconTestPass class="inline-block size-8 min-w-5 text-primary" />
+										</div>
+										<p class="inline-flex flex-col items-center justify-center">
+											Passed {testRows.filter((r) => r.success).length}/{testRows.length} tests! Your
+											schematic works.
+										</p>
+									{/if}
+								</div>
+								<table class="border border-border p-2">
+									<thead class="">
+										<tr>
+											{#each unlockNodeInfo.truthTable![0][0] as _, i}
+												<th scope="col" class="border border-border p-2">Input {i + 1}</th>
+											{/each}
+											{#each unlockNodeInfo.truthTable![0][1] as _, i}
+												<th scope="col" class="border border-border p-2">Output {i + 1}</th>
+											{/each}
+										</tr>
+									</thead>
+									<tbody>
+										{#each unlockNodeInfo.truthTable as row, index}
+											<tr>
+												{#each row[0] as input}
+													<th
+														scope="col"
+														class="border-x border-border {row[1].length == 1
+															? row[1][0] == 0
+																? ''
+																: 'text-primary'
+															: ''}"
+													>
+														{input}
+													</th>
+												{/each}
+												{#each row[1] as output, j}
+													<th scope="col" class="animate-on-pass border-x border-border">
+														<span
+															class={row[1].length == 1
+																? row[1][0] == 0
+																	? ''
+																	: 'text-primary'
+																: ''}
+														>
+															{output}
+														</span>
+														{#if testRows[index] && testRows[index].success}
+															<div
+																class="inline-block"
+																transition:fly={{ x: 5, duration: 300, easing: expoOut }}
+															>
+																<IconCheck class="inline-block text-primary" />
+															</div>
+														{:else if testRows[index] && !testRows[index].success}
+															<div
+																class="inline-block"
+																transition:fly={{ x: 5, duration: 300, easing: expoOut }}
+															>
+																<IconAlert class="inline-block text-red-500" />
+																<span>{testRows[index].lists[1][j]}</span>
+															</div>
+														{/if}
+													</th>
+												{/each}
+											</tr>
+										{/each}
+									</tbody>
+								</table>
+							</div>
+						{/if}
 					{:else}
 						<div class="flex w-full flex-col gap-2 rounded-xl bg-card p-4">
 							<h3 class="h2 text-primary">All schematics unlocked</h3>
