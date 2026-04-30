@@ -28,12 +28,13 @@
 <div class="item-center flex flex-row justify-center gap-2">
 	<GenericNode
 		{selected}
+		bind:title={data.title}
 		data={{
 			label: data.active ? '1' : '0',
 			category: 'Outputs',
 			n_inputs: 1,
-			active: data.active,
-			title: data.title
+			n_outputs: 0,
+			active: data.active
 		}}
 	/>
 </div>

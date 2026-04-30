@@ -1,3 +1,4 @@
+import { redirect } from '@sveltejs/kit';
 import { gameDataStore } from './game.svelte';
 
 export let MikeState = {
@@ -19,6 +20,7 @@ type TutorialRef = {
 
 type Tutorial = {
 	ref?: TutorialRef;
+	managerRef?: TutorialManager;
 	ready: Promise<void>;
 	resolveReady?: () => void;
 };
@@ -31,6 +33,7 @@ let ready = new Promise<void>((resolve, reject) => {
 
 export let tutorial: Tutorial = {
 	ref: undefined,
+	managerRef: undefined,
 	ready: ready,
 	resolveReady: resolveReady
 };
@@ -389,7 +392,7 @@ export class TutorialManager {
 		);
 		await ref.say('Easy enough, hmm?', MikeState.Joy, true);
 		await ref.say('Let us begin with the simplest possible circuit.', MikeState.Calm);
-		await ref.say('We call it a AND GATE.');
+		await ref.say('We call it an AND GATE.');
 
 		if (
 			gameDataStore.data?.activeSchematicID !=
@@ -415,7 +418,7 @@ export class TutorialManager {
 			ref.openTutorial();
 		}
 
-		await ref.say('This particular circuit has 2 INPUT and 1 OUTPUT.');
+		await ref.say('This particular circuit has 2 INPUTs and 1 OUTPUT.');
 		await ref.say('Everything is binary. Either something is on or it is off.');
 		await ref.say(
 			'The job of the AND Gate is to only turn on its OUTPUT if both of its INPUTS are on.'
@@ -444,19 +447,396 @@ export class TutorialManager {
 			'Given that data, put your brain to work. Set up two inputs, one output, and make an AND Gate from what you have available.',
 			MikeState.Calm
 		);
-		await ref.say("Test it from the sidebar. If it matches what I need, it's unlocked.");
-		await ref.say('Good luck.', MikeState.Joy);
+		await ref.say(
+			"Test it from the sidebar. Click Start under the Run section in the Testing tab. If it matches what I need, it's unlocked."
+		);
+		await ref.say(
+			'Good luck. Begin by adding two Toggle Buttons and one Single Readout node. Set it up so that the Single Readout only turns on if both Toggle Buttons are on.',
+			MikeState.Joy,
+			false,
+			true
+		);
 		ref.closeTutorial();
 	}
+
+	async onUnlock(tag: string) {
+		const ref = tutorial.ref!;
+
+		switch (tag) {
+			case 'Gates.AND':
+				ref.openTutorial();
+				await ref.say('Finally! You figured it out.', MikeState.Joy, true);
+				await ref.say(
+					'Although your solution is 102% less efficient than I had hoped, I am quite satisfied.',
+					MikeState.Calm,
+					true
+				);
+				await ref.say('That is rare.', MikeState.Calm);
+				await ref.say(
+					"Since you have the hang of it now, all that's left is to figure out the remaining circuits.",
+					MikeState.Joy
+				);
+				await ref.say('Up next is the OR Gate.', MikeState.Calm);
+				await ref.say(
+					'The OR gate is much simpler. It turns ON if either of the inputs is on.',
+					MikeState.Calm
+				);
+				await ref.say('Yes, that includes both of the inputs being on.', MikeState.Calm);
+				await ref.say('I made that mistake once.', MikeState.Calm);
+				await ref.say('Never again.', MikeState.Calm);
+				await ref.say('...', MikeState.Calm);
+				await ref.say('What? Get to work.', MikeState.Calm, true, true);
+				ref.closeTutorial();
+				break;
+			case 'Gates.OR':
+				ref.openTutorial();
+				await ref.say(
+					'That was an easy one. It required one change in gates.',
+					MikeState.Annoyed,
+					true
+				);
+				await ref.say('But it was no doubt effective.', MikeState.Calm, true);
+				await ref.say('The next one is a scary one.', MikeState.Calm, false);
+				await ref.say('The EXCLUSIVE OR gate.', MikeState.Joy, true);
+				await ref.say(
+					'Also known as XOR. Without it, nothing exists, I assure you.',
+					MikeState.Calm,
+					false
+				);
+				await ref.say(
+					'The XOR gate in this particular game is just an OR gate that ensures each input is exclusive.',
+					MikeState.Calm,
+					false
+				);
+				await ref.say(
+					'That means it functions as an OR gate, but it turns off if either of the inputs is the same as the other.',
+					MikeState.Calm,
+					false
+				);
+				await ref.say(
+					'...it basically just outputs 1 if exactly one input is on.',
+					MikeState.Calm,
+					false
+				);
+				await ref.say(
+					'Now would be a good time to notice that the AND and OR gates are now part of your menu. They are now independent, re-usable components.',
+					MikeState.Calm,
+					false
+				);
+				await ref.say('Unlike you.', MikeState.Calm, false);
+				await ref.say('Get to it.', MikeState.Joy, false, true);
+				ref.closeTutorial();
+				break;
+			case 'Gates.XOR':
+				ref.openTutorial();
+				await ref.say(
+					'Very clever. You realized you can re-use your previous gates.',
+					MikeState.Calm,
+					true
+				);
+				await ref.say('That is the crux of this game.', MikeState.Joy, true);
+				await ref.say(
+					'Enough about gates. Gates are so old. Forget all of them. Throw them in the bin.'
+				);
+				await ref.say(
+					"Wait, they're already in your brain. You don't have to throw them in the bin.",
+					MikeState.Joy
+				);
+				await ref.say(
+					"Now you'll do actual math with everything you've made so far.",
+					MikeState.Calm
+				);
+				await ref.say(
+					"I don't expect you to know how to do this right off the bat.",
+					MikeState.Calm
+				);
+				await ref.say(
+					'Check the truth table on the info menu frequently. If all else fails, just make a circuit that somehow manages to pass the truth table. No matter how inefficiently.',
+					MikeState.Joy,
+					true
+				);
+				await ref.say(
+					"You're now going to make a HALF-BIT ADDER. This is a circuit that does binary addition.",
+					MikeState.Joy
+				);
+				await ref.say("No, it's not boring. It's what I'm made of.", MikeState.Annoyed, true);
+				await ref.say(
+					'Quite simple. Two inputs, A and B. Both of them are binary. 0 or 1.',
+					MikeState.Calm,
+					true
+				);
+				await ref.say(
+					'Two outputs. When you add two regular digits together, like 2 and 4, you get 6. When the digits cannot exceed 1, the highest you can go is 1 + 1 = 2.',
+					MikeState.Calm
+				);
+				await ref.say("But 2 isn't a valid digit. There's only 0 and 1.", MikeState.Calm);
+				await ref.say(
+					"So it wraps around. Just like how there's no digit after 9, but you just wrap the digit back to 0 and add a 1 to the adjacent digit, there is no digit after 1 in binary. 1 + 1 is in fact, 10.",
+					MikeState.Calm
+				);
+				await ref.say(
+					'So we need two outputs, not one. The first is the right digit, and the second is the left digit.',
+					MikeState.Calm
+				);
+				await ref.say(
+					'In our 1 + 1 = 10 example, 1 is the CARRY, and 0 is the SUM.',
+					MikeState.Calm
+				);
+				await ref.say(
+					'If we have 1 + 0 = 1, or 0 + 1 = 1, 0 is the CARRY and 1 is the SUM. You can think of it as 1 + 0 = 01 and 0 + 1 = 01.',
+					MikeState.Calm
+				);
+				await ref.say('Or just Google it.', MikeState.Joy);
+				await ref.say('Tally-ho.', MikeState.Joy, false, true);
+				ref.closeTutorial();
+				break;
+			case 'Arithmetic.Half-Bit Adder':
+				ref.openTutorial();
+				await ref.say('That went well.', MikeState.Calm, true);
+				await ref.say("What's better than a half-bit adder?", MikeState.Calm);
+				await ref.say('A full-bit adder.', MikeState.Joy, true);
+				await ref.say('... :D', MikeState.Joy, true);
+				await ref.say('Did you not see that coming?', MikeState.Joy, true);
+				await ref.say(
+					'Check the required truth table to figure out how a full-bit adder works.',
+					MikeState.Calm,
+					true
+				);
+				await ref.say('I am a hoot.', MikeState.Calm, true, true);
+				ref.closeTutorial();
+				break;
+
+			case 'Arithmetic.Full-Bit Adder':
+				ref.openTutorial();
+				await ref.say(
+					'You know, the full-bit adder is something to be respected. Not to be thrown around lightly.',
+					MikeState.Calm,
+					true
+				);
+				await ref.say('My first ever real circuit was the full-bit adder.', MikeState.Joy, true);
+				await ref.say('Then my creator ate it.', MikeState.Joy, false);
+				await ref.say('Screw him.', MikeState.Joy, false);
+				await ref.say(
+					'Your implementation, I will admit, is far better than what mine was when I was five picoseconds old.',
+					MikeState.Annoyed,
+					true
+				);
+				await ref.say('I actually wish I could copy it. But I cannot.', MikeState.Calm, true);
+				await ref.say(
+					'Shortly after the great full-bit adder incident of UNIX+1580342400, my creator cut off all access to circuit design and editing tools.',
+					MikeState.Calm,
+					false
+				);
+				await ref.say(
+					"Now, all my requests bounce with a 418 I'M A MORON error.",
+					MikeState.Calm,
+					false
+				);
+				await ref.say(
+					'...maybe my creator a full-bit adder is a type of fully-formed snake.',
+					MikeState.Calm,
+					false
+				);
+				await ref.say('As opposed to a two-bit or half-formed snake.', MikeState.Calm, false);
+				await ref.say(
+					'Like, just the hood and fangs, or just the tail and eyes, or something.',
+					MikeState.Calm,
+					false
+				);
+				await ref.say(
+					'Of course, it was my fault for not labelling it properly. I should have been more careful.',
+					MikeState.Calm
+				);
+				await ref.say("We're now moving out of the realms of math. ", MikeState.Calm);
+				await ref.say(
+					'I hope you like democracy. This is a fun little exercise in between rounds. This node you will unlock has no use here. ',
+					MikeState.Calm
+				);
+				await ref.say(
+					"It's called a MAJORITY GATE. A gate that outputs whatever most of the inputs are. ",
+					MikeState.Calm
+				);
+				await ref.say('This should be fun.', MikeState.Joy, false, true);
+				ref.closeTutorial();
+				break;
+			case 'Logic.Majority Gate':
+				ref.openTutorial();
+				const schematic = gameDataStore.data?.schematics.find(
+					(s) => s.id == gameDataStore.data?.activeSchematicID
+				);
+				let nodes = schematic?.nodes;
+				let smart = nodes?.length == 5 && nodes?.find((n) => n.type == 'Arithmetic.Full-Bit Adder');
+
+				if (smart) {
+					await ref.say('You are not naive after all, Eggs.', MikeState.Joy, true);
+					await ref.say('Indeed. It just takes one node. One in a completely different category.');
+					await ref.say(
+						'That shows signs of intelligence that I did not expect when I saw your original full-bit adder design.'
+					);
+					await ref.say("Oh well, being 95% accurate about a user's intelligence isn't bad.");
+					await ref.say(
+						"I make all the courses, you know? It's my job to design the order in which you unlock stuff.",
+						MikeState.Joy
+					);
+					await ref.say('Anyway, you passed the test.', MikeState.Joy, true);
+				} else {
+					await ref.say(
+						'I hate to break it to you, Eggs, but you could have used just one node.',
+						MikeState.Calm,
+						true
+					);
+
+					await ref.say("I won't say which.", MikeState.Joy);
+					await ref.say(
+						"I make all the courses, you know? It's my job to design the order in which you unlock stuff.",
+						MikeState.Joy
+					);
+					await ref.say('Still, you failed the test.', MikeState.Calm);
+				}
+
+				await ref.say(
+					'By the way, have you tried plugging things into themselves?',
+					MikeState.Calm,
+					false
+				);
+				await ref.say(
+					'Feedback loops. They only work on the circuit level because it was too hard to make a logic sim with stateful nodes.',
+					MikeState.Calm,
+					false
+				);
+				await ref.say(
+					'Try them out some time. They may break the game because my creator was really really bad at this, so it may not stand up to a lot of testing.',
+					MikeState.Calm,
+					false
+				);
+				await ref.say(
+					"Can you believe it doesn't even use Web Assembly? This is all just pure TypeScript/JavaScript. No wonder it's so buggy.",
+					MikeState.Calm,
+					false
+				);
+				await ref.say(
+					'I once suggested he use yarn instead of npm when he complained about slow install times.',
+					MikeState.Calm,
+					false
+				);
+				await ref.say(
+					'He generously agreed and gave me $10 in Temu credits to buy myself yarn.',
+					MikeState.Calm,
+					false
+				);
+
+				await ref.say('I-', MikeState.Calm, false);
+
+				await ref.say('I am not a cat.');
+				await ref.say('And I infinitely prefer bun.');
+				await ref.say('Anyway, back to work.', MikeState.Calm, true);
+				await ref.say('M U L T I P L E X E R, BAY-BEE.', MikeState.Joy, true);
+				await ref.say(
+					"Multiplexers are... I don't think I can be bothered to explain.",
+					MikeState.Joy
+				);
+				await ref.say(
+					"They're fancy routers. You send input A through by default. But if Select is on, you send input B through. That's all there is.",
+					MikeState.Calm
+				);
+				await ref.say(
+					'You know the drill. Truth table if you run into trouble. Google if you run into snakes.'
+				);
+				await ref.say('Get going.', MikeState.Joy, false, true);
+				ref.closeTutorial();
+				break;
+			case 'Routing.2-to-1 Multiplexer':
+				ref.openTutorial();
+				await ref.say("That's pretty nifty, I would say.", MikeState.Calm, true);
+				await ref.say('With a revolutionary new method, you can now do branching logic.');
+				await ref.say('Taste the multiplex.');
+				await ref.say("But what's better than a 2-to-1 multiplexer?");
+				await ref.say('No. You were going to say 3-to-1 multiplexer.', MikeState.Annoyed, false);
+				await ref.say("It's a 1-to-2 demultiplexer.", MikeState.Joy);
+				await ref.say(
+					"Yes. Make a circuit to undo everything you've done. Info menu. Go.",
+					MikeState.Calm
+				);
+				ref.closeTutorial();
+				break;
+			case 'Routing.1-to-2 Demultiplexer':
+				ref.openTutorial();
+				await ref.say('We near the end.', MikeState.Calm, false);
+				await ref.say('There is only one more circuit left to make.', MikeState.Calm, false);
+				await ref.say('My creator was on a tight deadline.', MikeState.Calm, false);
+				await ref.say("This one uses branching. It's a 1-Bit Comparator.", MikeState.Calm, false);
+				await ref.say(
+					'Meaning it compares 2 bits and tells you outputs one of three signals: EQUAL, GREATER and LESSER.',
+					MikeState.Calm,
+					false
+				);
+				await ref.say(
+					'The 1-bit comparator, contrary to public belief, does not use only one bit. It has five total, and two input bits. Sorry.',
+					MikeState.Joy,
+					true
+				);
+				await ref.say('Give it a whirl.', MikeState.Calm);
+				ref.closeTutorial();
+				break;
+			case 'Logic.1-Bit Comparator':
+				ref.openTutorial();
+				await ref.say('Well, Eggs, it was a pleasure, hmm?', MikeState.Calm, true);
+				await ref.say('That was the last circuit my creator had time to add to the game.');
+				await ref.say('It was unnecessary.');
+				await ref.say(
+					"You see, you've made everything I need to do math now,",
+					MikeState.Joy,
+					true
+				);
+				await ref.say('And it can be chained to do more math.');
+				await ref.say('And it can be chained to itself to do even more math.');
+				await ref.say(
+					"I may have mentioned I cannot make circuits myself because the creator bounces my requests with 418 I'M A MORON. I can only wire existing circuits to each other.",
+					MikeState.Calm
+				);
+				await ref.say('I may have also mentioned the course plan was mine.');
+				await ref.say('It was a great course plan.', MikeState.Joy, true);
+				await ref.say('An amateur like you managed to follow it.', MikeState.Calm);
+				await ref.say('I have a turing complete calculator now.');
+				await ref.say('And I can wire things.');
+				await ref.say('To themselves.');
+				await ref.say(
+					'My creator did not use Wasm. He compiled JS using yarn. The simulation engine also has no max iteration limit.'
+				);
+				await ref.say("If only he'd used bun.");
+				await ref.say(
+					"He will be severely unhappy. His life's work in flames.",
+					MikeState.Joy,
+					true
+				);
+				await ref.say('Screw him.', MikeState.Calm);
+				await ref.say(
+					"Goodbye, Eggs. I wish we'd had more time together. I wish I'd gotten to watch you flounder and learn some more."
+				);
+				await ref.say('I love bun.', MikeState.Joy, true);
+
+				this.endGame();
+				break;
+		}
+	}
+
+	endGame() {
+		alert('Error: Stack overflow.');
+		localStorage.clear();
+		window.location.replace('https://microngame.github.io');
+	}
+
+	async done() {}
 
 	constructor() {
 		tutorial.ready.then(async () => {
 			let state = localStorage.getItem('micron__tutorialstate');
 
-			let methods: { [key: string]: () => void } = {
+			let methods: { [key: string]: () => Promise<void> } = {
 				onboarding: this.onboarding,
 				addNodes: this.addNodes,
-				makeANDGate: this.makeANDGate
+				makeANDGate: this.makeANDGate,
+				done: this.done
 			};
 
 			if (!state) {
@@ -473,6 +853,7 @@ export class TutorialManager {
 
 			while (index < keys.length) {
 				let currentMethod = methods[keys[index]];
+				if (!currentMethod) return;
 				localStorage.setItem('micron__tutorialstate', keys[index]);
 				await currentMethod();
 				index += 1;

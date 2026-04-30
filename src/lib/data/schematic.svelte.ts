@@ -52,8 +52,10 @@ export function* testSchematic(map: {
 		(s) => s.id == gameDataStore.data?.activeSchematicID
 	);
 
+	const nextSchematicToUnlock = gameDataStore.data?.nextSchematicToUnlock;
+	if (!nextSchematicToUnlock) throw 'There is no schematic left to unlock.';
 
-	const info = nodeInfo[gameDataStore.data?.nextSchematicToUnlock.split('.')[1]!];
+	const info = nodeInfo[nextSchematicToUnlock.split('.')[1]!];
 	const table = info.truthTable;
 	schematic?.nodes.forEach((n) => {
 		n.data.active = false;
@@ -62,7 +64,7 @@ export function* testSchematic(map: {
 	let nodes: Node[] = JSON.parse(JSON.stringify(schematic?.nodes));
 	let edges: Edge[] = JSON.parse(JSON.stringify(schematic?.edges));
 
-	for (let test of table) {
+	for (let test of table!) {
 		info.inputList.forEach((inputName, index) => {
 			const node = nodes.find((n) => n.id == map.inputs[inputName]);
 			if (!node) return;

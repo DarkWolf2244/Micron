@@ -58,10 +58,60 @@ const executors: {
 			outputs: [result]
 		};
 	},
-	'Outputs.OneBitReadout': (inputs, _nodeData) => {
+	'Outputs.Single Readout': (inputs, _nodeData) => {
 		return {
 			active: inputs[0] ?? false,
 			outputs: []
+		};
+	},
+	'Arithmetic.Half-Bit Adder': (inputs, _nodeData) => {
+		const s = inputs[0] !== inputs[1];
+		const c = inputs[0] && inputs[1];
+		return {
+			active: inputs[0] || inputs[1],
+			outputs: [s, c]
+		};
+	},
+	'Arithmetic.Full-Bit Adder': (inputs, _nodeData) => {
+		const s = (inputs[0] !== inputs[1]) !== inputs[2];
+		const c = (inputs[0] && inputs[1]) || (inputs[2] && inputs[0] !== inputs[1]);
+
+		return {
+			active: inputs[0] || inputs[1] || inputs[2],
+			outputs: [s, c]
+		};
+	},
+	'Routing.2-to-1 Multiplexer': (inputs, _nodeData) => {
+		const o = inputs[2] ? inputs[1] : inputs[0];
+		return {
+			active: o,
+			outputs: [o]
+		};
+	},
+	'Routing.1-to-2 Demultiplexer': (inputs, _nodeData) => {
+		const o1 = !inputs[1] ? inputs[0] : false;
+		const o2 = inputs[1] ? inputs[0] : false;
+		return {
+			active: o1 || o2,
+			outputs: [o1, o2]
+		};
+	},
+	'Logic.1-Bit Comparator': (inputs, _nodeData) => {
+		const e = inputs[0] == inputs[1];
+		const g = inputs[0] > inputs[1];
+		const l = inputs[0] < inputs[1];
+
+		return {
+			active: true,
+			outputs: [e, g, l]
+		};
+	},
+	'Logic.Majority Gate': (inputs, _nodeData) => {
+		const activeCount = (inputs[0] ? 1 : 0) + (inputs[1] ? 1 : 0) + (inputs[2] ? 1 : 0);
+
+		return {
+			active: activeCount > 0,
+			outputs: [activeCount >= 2]
 		};
 	}
 };
@@ -81,7 +131,13 @@ const metadataRegistry: {
 		'Gates.NOT': 1,
 		'Gates.NOR': 2,
 		'Gates.NAND': 2,
-		'Outputs.OneBitReadout': 1
+		'Arithmetic.Half-Bit Adder': 2,
+		'Arithmetic.Full-Bit Adder': 3,
+		'Routing.2-to-1 Multiplexer': 3,
+		'Routing.1-to-2 Demultiplexer': 2,
+		'Logic.Majority Gate': 3,
+		'Logic.1-Bit Comparator': 2,
+		'Outputs.Single Readout': 1
 	}
 };
 

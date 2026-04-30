@@ -10,10 +10,15 @@ import TransistorPMOS from '$lib/components/ui/nodes/transistors/TransistorPMOS.
 import InputToggleButton from '$lib/components/ui/nodes/inputs/InputToggleButton.svelte';
 import type { Component } from 'svelte';
 import type { XYPosition } from '@xyflow/svelte';
-import OneBitReadout from '$lib/components/ui/nodes/outputs/OneBitReadout.svelte';
+import OneBitReadout from '$lib/components/ui/nodes/outputs/SingleReadout.svelte';
 import GateNOR from '$lib/components/ui/nodes/gates/GateNOR.svelte';
 import GateNAND from '$lib/components/ui/nodes/gates/GateNAND.svelte';
-import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
+import HalfBitAdder from '$lib/components/ui/nodes/arithmetic/HalfBitAdder.svelte';
+import FullBitAdder from '$lib/components/ui/nodes/arithmetic/FullBitAdder.svelte';
+import T1Multiplexer from '$lib/components/ui/nodes/routing/2T1Multiplexer.svelte';
+import T2Demultiplexer from '$lib/components/ui/nodes/routing/1T2Demultiplexer.svelte';
+import OneBitComparator from '$lib/components/ui/nodes/logic/OneBitComparator.svelte';
+import MajorityGate from '$lib/components/ui/nodes/logic/MajorityGate.svelte';
 
 export let nodeRegistry: {
 	[key: string]: { [key: string]: Component<any> };
@@ -26,11 +31,23 @@ export let nodeRegistry: {
 		NOR: GateNOR,
 		NAND: GateNAND
 	},
+	Arithmetic: {
+		'Half-Bit Adder': HalfBitAdder,
+		'Full-Bit Adder': FullBitAdder
+	},
+	Routing: {
+		'2-to-1 Multiplexer': T1Multiplexer,
+		'1-to-2 Demultiplexer': T2Demultiplexer
+	},
+	Logic: {
+		'1-Bit Comparator': OneBitComparator,
+		'Majority Gate': MajorityGate
+	},
 	Inputs: {
 		'Toggle Button': InputToggleButton
 	},
 	Outputs: {
-		OneBitReadout: OneBitReadout
+		'Single Readout': OneBitReadout
 	}
 };
 
@@ -40,7 +57,17 @@ export const nodeTypes = Object.fromEntries(
 	)
 );
 export const nodeCategories = Object.keys(nodeRegistry);
-export const courseOutline = ['Gates.AND', 'Gates.OR', 'Gates.XOR'];
+export const courseOutline = [
+	'Gates.AND',
+	'Gates.OR',
+	'Gates.XOR',
+	'Arithmetic.Half-Bit Adder',
+	'Arithmetic.Full-Bit Adder',
+	'Logic.Majority Gate',
+	'Routing.2-to-1 Multiplexer',
+	'Routing.1-to-2 Demultiplexer',
+	'Logic.1-Bit Comparator'
+];
 
 interface GameData {
 	initialized: number;
@@ -49,7 +76,7 @@ interface GameData {
 	activeSchematicID: string;
 	activatedInputs: { id: string; active: boolean }[];
 	unlockedSchematics: string[];
-	nextSchematicToUnlock: string;
+	nextSchematicToUnlock?: string;
 }
 
 export let gameDataStore: {
@@ -59,7 +86,6 @@ export let gameDataStore: {
 	data: null,
 	loadingGameData: true
 });
-
 
 export function initializeNewSave() {
 	const schematicId = crypto.randomUUID();
@@ -75,7 +101,7 @@ export function initializeNewSave() {
 			'Gates.NAND',
 			'Gates.NOR',
 			'Inputs.Toggle Button',
-			'Outputs.OneBitReadout'
+			'Outputs.Single Readout'
 		],
 		nextSchematicToUnlock: 'Gates.AND'
 	};

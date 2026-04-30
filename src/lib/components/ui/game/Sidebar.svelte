@@ -10,6 +10,7 @@
 	import IconProgress from '~icons/tabler/progress';
 	import IconAlert from '~icons/tabler/alert-circle';
 	import IconStart from '~icons/tabler/play';
+	import IconSettings from '~icons/tabler/settings';
 
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { fade, fly, scale } from 'svelte/transition';
@@ -24,11 +25,24 @@
 	import type { Node } from '@xyflow/svelte';
 	import gsap from 'gsap';
 	import { overlayStore } from '$lib/data/overlay.svelte';
+	import { tutorial } from '$lib/data/tutorial.svelte';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	let { isExpanded }: { isExpanded: boolean } = $props();
 
 	let page = $state('info');
 
+	let modalConfirmResetOpen = $state(false);
+
+	function resetGame() {
+		modalConfirmResetOpen = true;
+	}
+	async function confirmReset() {
+		localStorage.clear();
+		console.log(goto(resolve('/')));
+	}
 	function onSelect(id: string) {
 		if (page == id) {
 			isExpanded = !isExpanded;
@@ -56,12 +70,22 @@
 
 	let currentNodeName = $derived(data.currentSelected?.type?.split('.').at(-1));
 	let currentNodeInfo = $derived(currentNodeName ? nodeInfo[currentNodeName] : undefined);
-	let unlockNodeInfo = $derived(nodeInfo[gameDataStore.data?.nextSchematicToUnlock.split('.')[1]!]);
+	let nextSchematicToUnlock = $derived(gameDataStore.data?.nextSchematicToUnlock);
+	let unlockNodeName = $derived(nextSchematicToUnlock?.split('.').at(-1));
+	let unlockNodeInfo = $derived.by(() => {
+		return unlockNodeName ? nodeInfo[unlockNodeName] : undefined;
+	});
 
 	let unlockMap: { inputs: { [key: string]: string }; outputs: { [key: string]: string } } = $state(
 		{ inputs: {}, outputs: {} }
 	);
 	let unlockVerificationState: { error?: string; success?: boolean } = $derived.by(() => {
+		if (!unlockNodeInfo) {
+			return {
+				error: 'There are no more schematics to unlock.'
+			};
+		}
+
 		const inputIDs = new Set(inputNodeOptions.map((n) => n.id));
 		const outputIDs = new Set(outputNodeOptions.map((n) => n.id));
 		const selectedInputs = unlockNodeInfo.inputList.map((input) => unlockMap.inputs[input]);
@@ -120,12 +144,14 @@
 	}
 
 	async function startTest() {
+		if (!unlockNodeInfo || !nextSchematicToUnlock) return;
+
 		testingStatus = 'progress';
 		testRows = [];
 
 		let tester = testSchematic(unlockMap);
 
-		for (let row of unlockNodeInfo.truthTable) {
+		for (let row of unlockNodeInfo.truthTable!) {
 			await tick();
 			let { done, value } = tester.next();
 			if (value) {
@@ -141,12 +167,27 @@
 		}
 		testingStatus = testRows.every((row) => row.success) ? 'pass' : 'fail';
 		if (testingStatus == 'pass') {
+			const unlockedTag = nextSchematicToUnlock;
+
 			overlayStore.runOnce(
 				'New node unlocked!',
 				"It's been added to your catalog.",
 				'Continue',
 				() => {
+					if (!gameDataStore.data) return;
+
 					overlayStore.close();
+
+					unlockMap.inputs = {};
+					unlockMap.outputs = {};
+					testingStatus = 'none';
+
+					tutorial.managerRef?.onUnlock(unlockedTag);
+					if (!gameDataStore.data.unlockedSchematics.includes(unlockedTag)) {
+						gameDataStore.data.unlockedSchematics.push(unlockedTag);
+					}
+					gameDataStore.data.nextSchematicToUnlock =
+						courseOutline[courseOutline.indexOf(unlockedTag) + 1];
 				}
 			);
 		}
@@ -194,6 +235,11 @@
 				class="{page == 'course' && isExpanded ? 'text-primary' : ''} transition-colors"
 			/></Button
 		>
+		<Button variant="outline" onclick={() => onSelect('settings')}
+			><IconSettings
+				class="{page == 'settings' && isExpanded ? 'text-primary' : ''} transition-colors"
+			/></Button
+		>
 		<div class="h-full w-full flex-1"></div>
 		{#if isExpanded}
 			<Button variant="outline" onclick={() => (isExpanded = false)}><IconCollapse /></Button>
@@ -202,10 +248,10 @@
 	<div
 		class="bg-background {isExpanded
 			? 'pointer-events-auto mr-10 w-full'
-			: 'pointer-events-none w-[0%]'} anchor h-full border border-border p-2 transition-all"
+			: 'pointer-events-none w-[0%]'} anchor h-full border border-border p-2 transition-all duration-300 ease-in-out"
 	>
 		{#if isExpanded}
-			<div in:fade={{ duration: 300 }} class="flex h-full flex-col gap-4 overflow-y-auto p-2">
+			<div in:fade={{ duration: 400 }} class="flex h-full flex-col gap-4 overflow-y-auto p-2">
 				{#if page == 'info'}
 					{#if data.currentSelected}
 						<div class="w-fit rounded-2xl border border-border bg-background p-2 text-sm">
@@ -283,11 +329,12 @@
 				{:else if page == 'test'}
 					<h2 class="h1">Testing</h2>
 					<hr class="mb-2" />
+					{#if unlockNodeInfo && nextSchematicToUnlock}
 					<div class="flex w-full flex-col items-center gap-2 rounded-xl bg-card p-4">
 						<p class="h4 w-full text-start font-light">Now unlocking</p>
 
 						<h3 class="w-full text-start text-4xl font-bold text-primary">
-							{gameDataStore.data?.nextSchematicToUnlock.split('.')[1]}
+							{unlockNodeName}
 						</h3>
 					</div>
 
@@ -388,7 +435,7 @@
 									<p class="inline-block">You haven't run the tests yet.</p>
 								{:else if testingStatus == 'progress'}
 									<IconProgress class="inline-block size-8 min-w-5 animate-spin text-white" />
-									<p class="inline-block">Running {unlockNodeInfo.truthTable.length} tests...</p>
+									<p class="inline-block">Running {unlockNodeInfo.truthTable!.length} tests...</p>
 								{:else if testingStatus == 'fail'}
 									<div
 										class="inline-flex flex-col items-center justify-center"
@@ -415,10 +462,10 @@
 							<table class="border border-border p-2">
 								<thead class="">
 									<tr>
-										{#each unlockNodeInfo.truthTable[0][0] as _, i}
+										{#each unlockNodeInfo.truthTable![0][0] as _, i}
 											<th scope="col" class="border border-border p-2">Input {i + 1}</th>
 										{/each}
-										{#each unlockNodeInfo.truthTable[0][1] as _, i}
+										{#each unlockNodeInfo.truthTable![0][1] as _, i}
 											<th scope="col" class="border border-border p-2">Output {i + 1}</th>
 										{/each}
 									</tr>
@@ -469,6 +516,12 @@
 							</table>
 						</div>
 					{/if}
+					{:else}
+						<div class="flex w-full flex-col gap-2 rounded-xl bg-card p-4">
+							<h3 class="h2 text-primary">All schematics unlocked</h3>
+							<p class="p">There are no remaining course circuits to test.</p>
+						</div>
+					{/if}
 				{:else if page == 'course'}
 					<h2 class="h1">Progress</h2>
 					<hr class="mb-2" />
@@ -504,8 +557,31 @@
 							{/if}
 						{/each}
 					</div>
+				{:else if page == 'settings'}
+					<h2 class="h1">Settings</h2>
+					<hr class="mb-2" />
+					<div class="flex flex-row justify-between">
+						<p class="text-primary">Version</p>
+						<p class="text-white">V{gameDataStore.data?.schemaVersion}</p>
+					</div>
+					<Button variant="destructive" onclick={resetGame}>Delete game data and reset game</Button>
 				{/if}
 			</div>
 		{/if}
 	</div>
 </div>
+
+<Dialog.Root bind:open={modalConfirmResetOpen}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Are you sure you want to reset the game?</Dialog.Title>
+			<Dialog.Description>You will lose all your progress and schematics.</Dialog.Description>
+		</Dialog.Header>
+		<Dialog.Footer>
+			<Button class="bg-red-500 hover:bg-red-400" onclick={confirmReset}>Confirm</Button>
+			<Dialog.Close>
+				<Button variant="outline">No, cancel</Button>
+			</Dialog.Close>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>

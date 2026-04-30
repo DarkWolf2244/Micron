@@ -16,7 +16,7 @@
 	import { onMount, untrack } from 'svelte';
 	import { Simulator } from '$lib/data/simulation.svelte';
 	import TutorialOverlay from '$lib/components/ui/game/TutorialOverlay.svelte';
-	import { TutorialManager } from '$lib/data/tutorial.svelte';
+	import { tutorial, TutorialManager } from '$lib/data/tutorial.svelte';
 	import Sidebar from '$lib/components/ui/game/Sidebar.svelte';
 
 	let activeSchematic = $derived(
@@ -96,6 +96,7 @@
 	});
 
 	onMount(() => {
+		tutorial.managerRef = tutorialManager;
 		return () => {
 			if (tickInterval) clearInterval(tickInterval);
 		};
