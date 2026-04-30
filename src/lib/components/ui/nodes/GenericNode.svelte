@@ -14,7 +14,7 @@
 			n_outputs?: number;
 			category: string;
 			active?: boolean;
-			topTitle?: string;
+			title?: string;
 		};
 		selected: boolean;
 		topTitle?: string;
@@ -39,6 +39,7 @@
 			top: `${((index + 1) / (count + 1)) * 100}%`
 		}));
 	});
+
 </script>
 
 <div
@@ -46,7 +47,9 @@
 		? ' outline-primary'
 		: 'outline-transparent'} transition-all"
 >
-	<p>{topTitle}</p>
+	{#if data.title}
+		<p class="w-full p-2 hover:cursor-text" contenteditable="true" bind:innerText={data.title}></p>
+	{/if}
 	<div class="flex flex-row items-center space-x-4 p-2">
 		{#if Icon}
 			<Icon />

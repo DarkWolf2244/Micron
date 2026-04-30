@@ -12,8 +12,8 @@ import type { Component } from 'svelte';
 import type { XYPosition } from '@xyflow/svelte';
 import OneBitReadout from '$lib/components/ui/nodes/outputs/OneBitReadout.svelte';
 import GateNOR from '$lib/components/ui/nodes/gates/GateNOR.svelte';
-
-
+import GateNAND from '$lib/components/ui/nodes/gates/GateNAND.svelte';
+import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
 
 export let nodeRegistry: {
 	[key: string]: { [key: string]: Component<any> };
@@ -23,11 +23,8 @@ export let nodeRegistry: {
 		OR: GateOR,
 		XOR: GateXOR,
 		NOT: GateNOT,
-		NOR: GateNOR
-	},
-	Transistors: {
-		NMOS: TransistorNMOS,
-		PMOS: TransistorPMOS
+		NOR: GateNOR,
+		NAND: GateNAND
 	},
 	Inputs: {
 		'Toggle Button': InputToggleButton
@@ -43,6 +40,7 @@ export const nodeTypes = Object.fromEntries(
 	)
 );
 export const nodeCategories = Object.keys(nodeRegistry);
+export const courseOutline = ['Gates.AND', 'Gates.OR', 'Gates.XOR'];
 
 interface GameData {
 	initialized: number;
@@ -50,6 +48,8 @@ interface GameData {
 	schematics: Schematic[];
 	activeSchematicID: string;
 	activatedInputs: { id: string; active: boolean }[];
+	unlockedSchematics: string[];
+	nextSchematicToUnlock: string;
 }
 
 export let gameDataStore: {
@@ -60,6 +60,7 @@ export let gameDataStore: {
 	loadingGameData: true
 });
 
+
 export function initializeNewSave() {
 	const schematicId = crypto.randomUUID();
 
@@ -68,7 +69,15 @@ export function initializeNewSave() {
 		schemaVersion: 1,
 		schematics: [createSchematicFromData('Untitled Schematic', [], [], schematicId)],
 		activeSchematicID: schematicId,
-		activatedInputs: []
+		activatedInputs: [],
+		unlockedSchematics: [
+			'Gates.NOT',
+			'Gates.NAND',
+			'Gates.NOR',
+			'Inputs.Toggle Button',
+			'Outputs.OneBitReadout'
+		],
+		nextSchematicToUnlock: 'Gates.AND'
 	};
 }
 
@@ -100,6 +109,21 @@ $effect.root(() => {
 		if (!activeSchematic.edges) {
 			activeSchematic.edges = [];
 		}
+
+		activeSchematic.edges = activeSchematic.edges.map((e) => {
+			if (activeSchematic.nodes.find((n) => n.id == e.source)?.data.active) {
+				return {
+					...e,
+
+					style: 'stroke: var(--primary)'
+				};
+			} else {
+				return {
+					...e,
+					style: 'stroke: var(--xy-edge-stroke-default)'
+				};
+			}
+		});
 
 		localStorage.setItem('micron__gamedata', JSON.stringify(data));
 	});

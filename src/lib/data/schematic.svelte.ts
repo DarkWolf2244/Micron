@@ -1,5 +1,8 @@
 import type { Edge, Node, XYPosition } from '@xyflow/svelte';
 import { gameDataStore } from './game.svelte';
+import { nodeInfo } from './info.svelte';
+import { Simulator } from './simulation.svelte';
+import { tick } from 'svelte';
 
 export interface Schematic {
 	nodes: Node[];
@@ -40,3 +43,65 @@ export let addNodeToActiveSchematic = (type: string, position: XYPosition, id?: 
 		}
 	];
 };
+
+export function* testSchematic(map: {
+	inputs: { [key: string]: string };
+	outputs: { [key: string]: string };
+}) {
+	const schematic = gameDataStore.data?.schematics.find(
+		(s) => s.id == gameDataStore.data?.activeSchematicID
+	);
+
+
+	const info = nodeInfo[gameDataStore.data?.nextSchematicToUnlock.split('.')[1]!];
+	const table = info.truthTable;
+	schematic?.nodes.forEach((n) => {
+		n.data.active = false;
+	});
+
+	let nodes: Node[] = JSON.parse(JSON.stringify(schematic?.nodes));
+	let edges: Edge[] = JSON.parse(JSON.stringify(schematic?.edges));
+
+	for (let test of table) {
+		info.inputList.forEach((inputName, index) => {
+			const node = nodes.find((n) => n.id == map.inputs[inputName]);
+			if (!node) return;
+
+			node.data.active = test[0][index] == 1;
+			console.log(`Set ${node.type} to node.data.active of ${node.data.active}`);
+		});
+		console.log('Passing', JSON.stringify(nodes, undefined, 4));
+		let sim = new Simulator(nodes, edges);
+		for (let i = 0; i < 10000; i++) {
+			sim.tick();
+		}
+
+		nodes = schematic?.nodes!;
+
+		let eList: number[] = [];
+		let rList: number[] = [];
+		let success = true;
+
+		info.outputList.forEach((outputName, index) => {
+			const node = nodes.find((n) => n.id == map.outputs[outputName]);
+			const expected = test[1][index] == 1;
+			const received = node?.data.active ? true : false;
+
+			eList.push(expected ? 1 : 0);
+			rList.push(received ? 1 : 0);
+			if (expected != received) {
+				success = false;
+			}
+		});
+
+		console.log(`
+			=== Testing with ${test[0]} -> ${test[1]} for ${gameDataStore.data?.nextSchematicToUnlock} ===
+			Nodes: ${JSON.stringify(nodes, undefined, 4)}
+			Expected outputs: ${eList}
+			Received outputs: ${rList}
+			==============================================================================================
+
+`);
+		yield [eList, rList, success];
+	}
+}

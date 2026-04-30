@@ -34,14 +34,19 @@
 
 	function openTutorial() {
 		data.isTutorialVisible = true;
-		gsap.to('.tutorial-bar', { bottom: 0, opacity: 1, ease: 'expo.out', duration: 1 });
+		gsap.to('.tutorial-bar', { yPercent: 0, autoAlpha: 1, ease: 'expo.out', duration: 0.8 });
 	}
 
 	function closeTutorial() {
 		data.isTutorialVisible = false;
-		gsap.to('.tutorial-bar', { bottom: -200, opacity: 1, ease: 'expo.out', duration: 1 });
+		gsap.to('.tutorial-bar', {
+			yPercent: 110,
+			autoAlpha: 0,
+			ease: 'expo.out',
+			duration: 0.6
+		});
 	}
-	
+
 	async function say(
 		message: string,
 		mikeState?: number,
@@ -98,6 +103,8 @@
 	}
 
 	onMount(() => {
+		gsap.set('.tutorial-bar', { yPercent: 110, autoAlpha: 0 });
+
 		data._lottieAnimationLoaded = new Promise((resolve, reject) => {
 			data._lottieAnimationLoadedResolver = resolve;
 		});
@@ -212,8 +219,10 @@
 </svelte:head>
 
 <div
-	class="tutorial-bar absolute -bottom-50 flex h-[20%] w-full flex-row items-center justify-center p-2"
-	style:opacity={1}
+	class="tutorial-bar fixed right-0 bottom-0 left-0 z-70 flex h-[clamp(8rem,22vh,14rem)] w-full flex-row items-center justify-center p-2 {data.isTutorialVisible
+		? 'pointer-events-auto'
+		: 'pointer-events-none'}"
+	style="opacity: 0; visibility: hidden;"
 	onclick={onClick}
 	onkeydown={(e) => {
 		if (e.key === 'Enter' || e.key === ' ') {
@@ -226,14 +235,14 @@
 	aria-label="Continue tutorial"
 >
 	<div
-		class="relative flex h-full w-full flex-row rounded-lg border {data.isTutorialVisible
+		class="relative flex h-full min-h-0 w-full flex-row overflow-hidden rounded-lg border {data.isTutorialVisible
 			? 'border-primary'
 			: 'border-transparent'} {data.messageState == 'dismissable'
 			? 'cursor-pointer'
 			: ''} bg-black shadow-2xl shadow-black transition-all duration-1000"
 	>
 		<div
-			class="flex aspect-square w-[20%] mike-bounce flex-row items-center justify-center p-5"
+			class="mike-bounce flex h-full w-[clamp(5rem,18vw,10rem)] shrink-0 flex-row items-center justify-center p-2 sm:p-5"
 		>
 			<DotLottieSvelte
 				src={data.lottieSrc || ''}
@@ -241,10 +250,12 @@
 			/>
 		</div>
 		<div class="h-full w-0.5 bg-primary"></div>
-		<div class="flex flex-row justify-center items-center w-full max-w-[80%] flex-1 p-2">
-			<p class="text-md font-mono">
+		<div class="flex min-w-0 flex-1 flex-row items-center justify-center overflow-y-auto p-2 pr-12">
+			<p
+				class="max-h-full w-full font-mono text-sm leading-relaxed wrap-break-word whitespace-pre-wrap sm:text-base md:text-lg"
+			>
 				{#each data.message as c}
-					<span class="animate-in font-mono whitespace-pre opacity-0 select-none">{c}</span>
+					<span class="animate-in font-mono whitespace-pre-wrap opacity-0 select-none">{c}</span>
 				{/each}
 			</p>
 		</div>
@@ -262,7 +273,6 @@
 	}
 
 	@keyframes bounce {
-		
 		0%,
 		100% {
 			transform: translateY(-5%);

@@ -8,12 +8,12 @@
 		selected,
 		id
 	}: {
-		data: { label: string; n_inputs: number; category: string, active: boolean };
+		data: { label: string; n_inputs: number; category: string; active: boolean; title?: string };
 		selected: boolean;
 		id: string;
 	} = $props();
 
-	let state = $state(false);
+	let state = $derived(data.active === undefined ? false : data.active);
 
 	onMount(() => {
 		state = data.active;
@@ -34,6 +34,9 @@
 		? ' outline-primary'
 		: 'outline-transparent'} transition-all"
 >
+	<p class="w-full p-2 hover:cursor-text" contenteditable="true" bind:innerText={data.title}>
+		Untitled Input
+	</p>
 	<div class="flex flex-row items-center space-x-4 p-2">
 		<div class="flex flex-row items-center justify-center">
 			<button

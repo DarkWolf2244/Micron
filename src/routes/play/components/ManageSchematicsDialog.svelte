@@ -17,6 +17,14 @@
 	let modalConfirmDeleteOpen = $state(false);
 	let _schematicToDelete = $state('');
 
+	let normalizedNewSchematicTitle = $derived(modalManageSchematicsTitleValue.trim());
+	let hasExactTitleMatch = $derived(
+		gameDataStore.data?.schematics.some(
+			(s) => s.title.trim().toLowerCase() == normalizedNewSchematicTitle.toLowerCase()
+		) ?? false
+	);
+	let canAddSchematic = $derived(Boolean(normalizedNewSchematicTitle) && !hasExactTitleMatch);
+
 	let schematicsToShow = $derived(
 		gameDataStore.data?.schematics
 			.filter((p) =>
@@ -33,7 +41,14 @@
 		let data = gameDataStore.data;
 		if (!data) return;
 
-		const title = modalManageSchematicsTitleValue;
+		const title = normalizedNewSchematicTitle;
+		if (!title) return;
+
+		if (hasExactTitleMatch) {
+			toast.error('A schematic with that name already exists.');
+			return;
+		}
+
 		const id = crypto.randomUUID();
 
 		data.schematics.push({
@@ -83,7 +98,7 @@
 				bind:value={modalManageSchematicsTitleValue}
 				placeholder="Search for a schematic or create a new one..."
 			/>
-			<Button disabled={(schematicsToShow?.length || 0) > 0} onclick={addSchematic}
+			<Button disabled={!canAddSchematic} onclick={addSchematic}
 				><IconAdd /> New schematic</Button
 			>
 		</div>

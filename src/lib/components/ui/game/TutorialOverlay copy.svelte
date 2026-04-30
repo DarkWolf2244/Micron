@@ -4,14 +4,19 @@
 	import { fade, fly } from 'svelte/transition';
 	import { DotLottieSvelte } from '@lottiefiles/dotlottie-svelte';
 	import type { DotLottie } from '@lottiefiles/dotlottie-web';
-	import {
-		MikeState,
-		tutorialStore,
-		type LaunchOptions,
-		type MikeStateValue
-	} from '$lib/data/tutorial.svelte';
+	import { MikeState } from '$lib/data/tutorial.svelte';
 	import gsap from 'gsap';
 	import IconContinue from '~icons/tabler/chevron-down';
+
+	type LaunchOptions = {
+		transitionIn?: boolean;
+		transitionOut?: boolean;
+	};
+	type MikeStateValue = number;
+
+	const tutorialStore: {
+		launch?: (text: string, mikeState: MikeStateValue, options?: LaunchOptions) => Promise<void>;
+	} = {};
 
 	// ── State ──────────────────────────────────────────────
 	let isVisible = $state(false);
@@ -23,7 +28,7 @@
 
 	// The src we feed to DotLottieSvelte (reactive prop drives loading)
 	const mikeStateMap = ['mike/MikeAwake.json', 'mike/MikeHappy.json', 'mike/MikeAnnoyed.json'];
-	let currentMikeState: MikeStateValue = $state(MikeState.Awake);
+	let currentMikeState: MikeStateValue = $state(MikeState.Calm);
 	let currentSrc = $derived(mikeStateMap[currentMikeState]);
 
 	// Transition options for the current step

@@ -50,6 +50,14 @@ const executors: {
 			outputs: [result]
 		};
 	},
+
+	'Gates.NAND': (inputs, _nodeData) => {
+		const result = !(inputs[0] && inputs[1]);
+		return {
+			active: result,
+			outputs: [result]
+		};
+	},
 	'Outputs.OneBitReadout': (inputs, _nodeData) => {
 		return {
 			active: inputs[0] ?? false,
@@ -72,6 +80,7 @@ const metadataRegistry: {
 		'Gates.OR': 2,
 		'Gates.NOT': 1,
 		'Gates.NOR': 2,
+		'Gates.NAND': 2,
 		'Outputs.OneBitReadout': 1
 	}
 };

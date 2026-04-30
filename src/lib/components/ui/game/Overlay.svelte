@@ -64,7 +64,7 @@
 	function close() {
 		overlayStore.active = false;
 	}
-	
+
 	onMount(() => {
 		overlayStore.runOnce = runOnce;
 		overlayStore.close = close;
@@ -81,9 +81,9 @@
 </script>
 
 <div
-	class="absolute inset-0 z-10 flex h-screen w-full flex-col items-center justify-center gap-y-4 transition-all bg-blend-darken {overlayStore.active
-		? 'bg-[#000000e5] pointer-events-auto'
-		: 'bg-transparent pointer-events-none'}"
+	class="absolute inset-0 z-90 flex h-screen w-full flex-col items-center justify-center gap-y-4 bg-blend-darken transition-all {overlayStore.active
+		? 'pointer-events-auto bg-[#000000e5]'
+		: 'pointer-events-none bg-transparent'}"
 >
 	{#if overlayStore.active}
 		<div class="h1 text-8xl text-primary" bind:this={headingMessage}>

@@ -316,7 +316,7 @@ export class TutorialManager {
 		ref.openTutorial();
 		await ref.say('And that is a wrap. Creative name.', MikeState.Calm, true);
 		await ref.say('Now you know how to play the game. Now we just need to...', MikeState.Calm);
-		await ref.say('...play the game.', MikeState.Joy, true);
+		await ref.say('...play the game.', MikeState.Joy, true, true);
 	}
 
 	async reprimand() {
@@ -375,7 +375,79 @@ export class TutorialManager {
 		});
 	}
 
-	makeANDGate() {}
+	async makeANDGate() {
+		const ref = tutorial.ref!;
+
+		await ref.openTutorial();
+		await ref.say("Let's make your first circuit.", MikeState.Calm, true);
+		await ref.say(
+			'To reiterate: your objective is to make CIRCUITS. They must pass my tests to continue.'
+		);
+		await ref.say('You can build a CIRCUIT from NODES.');
+		await ref.say(
+			'When you make a CIRCUIT that passes my tests, I will add it as a new NODE. You can use that NODE in your next circuits.'
+		);
+		await ref.say('Easy enough, hmm?', MikeState.Joy, true);
+		await ref.say('Let us begin with the simplest possible circuit.', MikeState.Calm);
+		await ref.say('We call it a AND GATE.');
+
+		if (
+			gameDataStore.data?.activeSchematicID !=
+			gameDataStore.data?.schematics.find((s) => s.title.toLowerCase() == 'and gate')?.id
+		) {
+			await ref.say('Switch back to your AND Gate schematic.');
+			ref.closeTutorial();
+
+			await new Promise<void>((resolve, reject) => {
+				let cleanup = $effect.root(() => {
+					$effect(() => {
+						let activeSchematicTitle = gameDataStore.data?.schematics.find(
+							(s) => s.id == gameDataStore.data?.activeSchematicID
+						)?.title;
+						if (activeSchematicTitle?.toLowerCase() == 'and gate') {
+							cleanup();
+							resolve();
+						}
+					});
+				});
+			});
+
+			ref.openTutorial();
+		}
+
+		await ref.say('This particular circuit has 2 INPUT and 1 OUTPUT.');
+		await ref.say('Everything is binary. Either something is on or it is off.');
+		await ref.say(
+			'The job of the AND Gate is to only turn on its OUTPUT if both of its INPUTS are on.'
+		);
+		await ref.say(
+			"You'll build this circuit using the only three nodes available to you at the moment."
+		);
+		await ref.say('NOT, NAND and NOR.');
+		await ref.say(
+			'NOT has one input and one output. It turns on if the input is off. It turns off if the input is on.'
+		);
+		await ref.say(
+			' NAND takes two inputs. It turns on by default, and only turns off if both inputs are on.'
+		);
+		await ref.say(
+			'NOR also takes two inputs. It turns off by default, and only turns on if both inputs are off.'
+		);
+		await ref.say(
+			'Complex? Click the help icon on the sidebar with a node selected to see how it works.',
+			MikeState.Joy
+		);
+		await ref.say(
+			'Your objective, again, is to make an AND Gate. An AND Gate only turns on if both inputs are on.'
+		);
+		await ref.say(
+			'Given that data, put your brain to work. Set up two inputs, one output, and make an AND Gate from what you have available.',
+			MikeState.Calm
+		);
+		await ref.say("Test it from the sidebar. If it matches what I need, it's unlocked.");
+		await ref.say('Good luck.', MikeState.Joy);
+		ref.closeTutorial();
+	}
 
 	constructor() {
 		tutorial.ready.then(async () => {

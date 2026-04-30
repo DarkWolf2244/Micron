@@ -1,6 +1,6 @@
 <script lang="ts">
 	import GenericNode from '../GenericNode.svelte';
-	import IconNOR from '~icons/tabler/logic-nor';
+	import IconNAND from '~icons/tabler/logic-nand';
 
 	let { selected, data }: { selected: boolean; data: any } = $props();
 
@@ -11,12 +11,11 @@
 
 <GenericNode
 	data={{
-		label: 'NOR',
-		icon: IconNOR,
+		label: 'NAND',
+		icon: IconNAND,
 		n_inputs: 2,
 		category: 'Gate',
 		active: data.active,
 	}}
 	{selected}
-	topTitle="Test"
 />

@@ -10,6 +10,8 @@
 	const altKey = isMac ? '⌥' : 'Alt';
 
 	import IconAlert from '~icons/tabler/alert-circle';
+	import IconLock from '~icons/tabler/lock';
+
 	import * as Kbd from '$lib/components/ui/kbd/';
 	import { onMount, untrack } from 'svelte';
 	import { Simulator } from '$lib/data/simulation.svelte';
@@ -69,6 +71,22 @@
 	let edgeIds = $derived(activeSchematic?.edges?.map((e) => e.id).join(',') ?? '');
 
 	let tutorialManager = new TutorialManager();
+
+	let unlockedNodeCategories = $derived.by(() => {
+		let newRegistry: { [key: string]: string[] } = {};
+
+		for (let category of nodeCategories) {
+			let data = [];
+			for (let item of Object.keys(nodeRegistry[category])) {
+				if (gameDataStore.data?.unlockedSchematics.includes(`${category}.${item}`)) data.push(item);
+			}
+
+			newRegistry[category] = data;
+		}
+
+		return newRegistry;
+	});
+
 	$effect(() => {
 		void nodeIds;
 		void edgeIds;
@@ -118,11 +136,16 @@
 	<Command.List>
 		{#each nodeCategories as group}
 			<Command.Group heading={group}>
-				{#each Object.keys(nodeRegistry[group]) as name}
+				{#each unlockedNodeCategories[group] as name}
 					<Command.Item
 						onclick={() => handleModalAddNodeMenuItemOnClick(group, name)}
 						class="cursor-pointer">{name}</Command.Item
 					>
+				{:else}
+					<div class="w-full flex flex-row justify-between rounded-xl bg-muted text-muted-foreground p-2">
+						<IconLock />
+						<p>Not yet unlocked</p>
+					</div>
 				{/each}
 			</Command.Group>
 		{/each}

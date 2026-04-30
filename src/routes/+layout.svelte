@@ -53,3 +53,7 @@
 
 <Overlay />
 <Toaster />
+<div class="small-screen-warning" role="status" aria-live="polite">
+	<strong>Micron needs more room.</strong>
+	<span>Use a wider or taller screen for reliable circuit editing.</span>
+</div>
